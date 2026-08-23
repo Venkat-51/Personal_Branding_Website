@@ -163,3 +163,36 @@ body {
   backdrop-filter: blur(6px);
   transition: opacity 0.3s ease;
 }
+
+/* Slide-In Toast Notification Animation */
+@keyframes slideDownIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast-slide-in {
+  animation: slideDownIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Sliding Marquee Ticker */
+.marquee-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.marquee-content {
+  display: inline-flex;
+  animation: marqueeScroll 25s linear infinite;
+}
+
+@keyframes marqueeScroll {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}

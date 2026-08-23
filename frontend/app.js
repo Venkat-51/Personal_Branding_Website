@@ -96,29 +96,29 @@ function initRevealAnimations() {
 
 /* 4. Interactive Project Detail Modals */
 const projectData = {
-  ecostore: {
-    title: 'EcoStore E-commerce Platform',
-    category: 'E-commerce / Next.js',
-    image: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1200&q=80',
-    description: 'A sustainable fashion platform built for speed and effortless user experience. Features custom headless Shopify integration, instant client-side filtering, and server-rendered product pages achieving a 99/100 Lighthouse performance score.',
-    stack: ['Next.js 14', 'TypeScript', 'Tailwind CSS', 'Shopify Storefront API', 'Stripe'],
-    link: 'https://example.com/ecostore'
+  supermarket: {
+    title: 'SuperMarketApp - Fresh Grocery E-Commerce',
+    category: 'E-commerce / Mobile Web App',
+    image: 'public/Supermarket img/5.png',
+    description: 'Enables users to browse, select, and purchase fresh groceries with fast delivery through a clean, easy-to-navigate mobile shopping experience with Google Auth integration.',
+    stack: ['React', 'Vite', 'Tailwind CSS', 'Google Auth API', 'Vercel'],
+    link: 'https://super-market-app-neon.vercel.app/'
   },
-  nova: {
-    title: 'Nova SaaS Analytics Dashboard',
-    category: 'Web App / React',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
-    description: 'Clean, real-time telemetry dashboard designed for server health monitoring and log analytics. Built with interactive canvas charts, dark mode adaptability, and granular access control for enterprise devops teams.',
-    stack: ['React', 'Chart.js', 'Node.js', 'WebSocket', 'Tailwind CSS'],
-    link: 'https://example.com/nova'
+  flowershop: {
+    title: 'Flower Shop Thanjavur - Florist Platform',
+    category: 'E-commerce / Florist Platform',
+    image: 'public/FlowerShop/1.png',
+    description: 'Handcrafted bouquets & floral decor website featuring custom bouquet configurator, WhatsApp instant order integration, same-day local delivery scheduling, and daily temple pooja floral subscriptions.',
+    stack: ['JavaScript', 'HTML5', 'Modern CSS', 'WhatsApp Business API', 'Netlify'],
+    link: 'https://flowershopz.netlify.app/'
   },
-  lumina: {
-    title: 'Lumina Portfolio & Studio System',
-    category: 'Design System & Website',
-    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&q=80',
-    description: 'The minimal portfolio design system you are experiencing right now. Tailored specifically to highlight project craft using custom typography hierarchy, soft surface depth, and zero bloated JavaScript libraries.',
-    stack: ['HTML5', 'Vanilla CSS', 'Tailwind Utilities', 'ES6 JavaScript'],
-    link: '#'
+  sellerrocket: {
+    title: 'Seller Rocket - E-Commerce Lead Funnel',
+    category: 'E-Commerce / Lead Generation Platform',
+    image: 'public/Seller Rocket/1.png',
+    description: 'Connects businesses with expert e-commerce solutions including Amazon account management, Shopify storefront setup, and custom WordPress development through high-conversion lead generation forms.',
+    stack: ['React', 'Vite', 'Node.js', 'Tailwind CSS', 'Vercel'],
+    link: 'https://sellerrocket-venkateswaran.vercel.app/'
   }
 };
 
@@ -141,6 +141,9 @@ function initProjectModals() {
         document.getElementById('modal-description').textContent = data.description;
         document.getElementById('modal-image').src = data.image;
         document.getElementById('modal-image').alt = data.title;
+
+        const modalLiveLink = document.getElementById('modal-live-link');
+        if (modalLiveLink) modalLiveLink.href = data.link;
 
         // Render Stack Chips
         const stackContainer = document.getElementById('modal-stack');
@@ -247,11 +250,8 @@ function initContactForm() {
     function handleSuccessResponse(data, name, email, recipient, serviceText, message, phone) {
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalBtnText;
-      if (data.success && data.emailSent) {
-        showStatus(`✓ Thank you, ${name}! Your inquiry has been sent directly to ${recipient}. We will contact ${email} within 24 hours.`, 'success');
-        form.reset();
-      } else if (data.success) {
-        showStatus(`✓ Thank you, ${name}! Your inquiry has been recorded.`, 'success');
+      if (data.success) {
+        showStatus(`✓ Thank you for your message, ${name}! I will reach out to you within 24 hours.`, 'success');
         form.reset();
       } else {
         triggerMailtoFallback(name, email, phone, serviceText, message, recipient);
@@ -270,13 +270,19 @@ function initContactForm() {
   function showStatus(message, type) {
     if (!statusMsg) return;
     statusMsg.innerHTML = message;
-    statusMsg.classList.remove('hidden', 'text-emerald-800', 'bg-emerald-100/70', 'border-emerald-300', 'text-red-800', 'bg-red-100/70', 'border-red-300');
+    statusMsg.classList.remove('hidden', 'toast-slide-in', 'text-emerald-800', 'bg-emerald-100/80', 'border-emerald-300', 'text-red-800', 'bg-red-100/80', 'border-red-300');
+
+    // Force reflow to trigger slide-in animation on every submission
+    void statusMsg.offsetWidth;
+    statusMsg.classList.add('toast-slide-in');
 
     if (type === 'success') {
-      statusMsg.classList.add('text-emerald-800', 'bg-emerald-100/80', 'border', 'border-emerald-300', 'p-4', 'rounded-xl', 'text-sm', 'font-medium', 'leading-relaxed');
+      statusMsg.classList.add('text-emerald-800', 'bg-emerald-100/90', 'border', 'border-emerald-300', 'p-4', 'rounded-xl', 'text-sm', 'font-medium', 'leading-relaxed', 'shadow-sm');
     } else {
-      statusMsg.classList.add('text-red-800', 'bg-red-100/80', 'border', 'border-red-300', 'p-4', 'rounded-xl', 'text-sm', 'font-medium', 'leading-relaxed');
+      statusMsg.classList.add('text-red-800', 'bg-red-100/90', 'border', 'border-red-300', 'p-4', 'rounded-xl', 'text-sm', 'font-medium', 'leading-relaxed', 'shadow-sm');
     }
+
+    statusMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   function validateEmail(email) {

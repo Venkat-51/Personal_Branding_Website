@@ -85,101 +85,93 @@ app.post('/api/contact', async (req, res) => {
 
     console.log(`[CONTACT INQUIRY RECEIVED] From: ${name} <${email}> | Phone: ${phone || 'N/A'} | Service: ${service}`);
 
-    let emailSent = false;
-    let deliveryMethod = null;
-    let messageId = null;
-
-    // 1. PRIMARY DISPATCH: Gmail SMTP via App Password
-    if (cleanEmailPass) {
-      try {
-        const mailInfo = await transporter.sendMail({
-          from: `"Studio.Dev Portfolio" <${cleanEmailUser}>`,
-          to: 'gvenkateswaran3@gmail.com',
-          replyTo: email,
-          subject: `New Project Inquiry from ${name} (${service || 'General'})`,
-          text: `Name: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'Not provided'}\nProject Type: ${service || 'General'}\n\nProject Details:\n${message}`,
-          html: `
-            <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd;">
-              <h2 style="color: #006c4b; margin-top: 0; font-size: 20px;">New Project Inquiry Received</h2>
-              <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2eae3;">
-                <p style="margin: 6px 0;"><strong>👤 Customer Name:</strong> ${name}</p>
-                <p style="margin: 6px 0;"><strong>✉️ Email Address:</strong> <a href="mailto:${email}" style="color: #006c4b;">${email}</a></p>
-                <p style="margin: 6px 0;"><strong>📞 Phone Number:</strong> <a href="tel:${phone}" style="color: #006c4b; font-weight: bold; text-decoration: none;">${phone || 'Not provided'}</a></p>
-                <p style="margin: 6px 0;"><strong>💼 Project Type:</strong> ${service || 'General Inquiry'}</p>
-              </div>
-              <p style="margin-bottom: 8px;"><strong>📝 Project Details:</strong></p>
-              <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42;">
-                ${message.replace(/\n/g, '<br>')}
-              </div>
-              <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
-              <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to gvenkateswaran3@gmail.com via Gmail SMTP</p>
-            </div>
-          `
-        });
-        console.log('[GMAIL SMTP SUCCESS] Email sent to gvenkateswaran3@gmail.com! Message ID:', mailInfo.messageId);
-        emailSent = true;
-        deliveryMethod = 'Gmail SMTP';
-        messageId = mailInfo.messageId;
-      } catch (gmailErr) {
-        console.error('[GMAIL SMTP ERROR]', gmailErr.message);
-      }
-    }
-
-    // 2. SECONDARY DISPATCH: Brevo API if Gmail SMTP did not send and BREVO_API_KEY is present
-    const brevoApiKey = process.env.BREVO_API_KEY;
-    if (!emailSent && brevoApiKey) {
-      try {
-        const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
-          method: 'POST',
-          headers: {
-            'api-key': brevoApiKey.trim(),
-            'accept': 'application/json',
-            'content-type': 'application/json'
-          },
-          body: JSON.stringify({
-            sender: { name: 'Studio.Dev Portfolio', email: 'gvenkateswaran3@gmail.com' },
-            to: [{ email: 'gvenkateswaran3@gmail.com', name: 'Venkateswaran' }],
-            replyTo: { email: email, name: name },
-            subject: `New Project Inquiry from ${name} (${service || 'General'})`,
-            htmlContent: `
-              <div style="font-family: Arial, sans-serif; padding: 20px; color: #161d19; background-color: #f4fbf4; border-radius: 8px;">
-                <h2 style="color: #006c4b; margin-top: 0;">New Project Inquiry</h2>
-                <p><strong>Sender Name:</strong> ${name}</p>
-                <p><strong>Sender Email:</strong> ${email}</p>
-                <p><strong>Sender Phone Number:</strong> ${phone}</p>
-                <p><strong>Project Type:</strong> ${service || 'General Inquiry'}</p>
-                <p><strong>Project Details:</strong></p>
-                <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #006c4b; border-radius: 4px; font-size: 14px; line-height: 1.6;">
-                  ${message.replace(/\n/g, '<br>')}
-                </div>
-              </div>
-            `
-          })
-        });
-
-        const brevoResult = await brevoResponse.json();
-        if (brevoResponse.ok) {
-          console.log('[BREVO SUCCESS] Email dispatched via Brevo API! Message ID:', brevoResult.messageId);
-          emailSent = true;
-          deliveryMethod = 'Brevo API';
-          messageId = brevoResult.messageId;
-        } else {
-          console.error('[BREVO API ERROR]', brevoResult);
-        }
-      } catch (brevoErr) {
-        console.error('[BREVO API EXCEPTION]', brevoErr.message);
-      }
-    }
-
+    // Respond INSTANTLY to the user (under 200ms)
     res.status(201).json({
       success: true,
-      message: emailSent 
-        ? `Inquiry successfully sent to gvenkateswaran3@gmail.com via ${deliveryMethod}.`
-        : `Inquiry recorded for ${name}. Note: Verify App Password in backend/.env.`,
-      emailSent,
-      deliveryMethod,
-      messageId,
+      message: `Thank you for your message, ${name}! I will reach out to you within 24 hours.`,
       data: newSubmission
+    });
+
+    // Dispatch email asynchronously in background (Non-blocking)
+    setImmediate(async () => {
+      let emailSent = false;
+
+      // 1. Primary: Gmail SMTP
+      if (cleanEmailPass) {
+        try {
+          const mailInfo = await transporter.sendMail({
+            from: `"Studio.Dev Portfolio" <${cleanEmailUser}>`,
+            to: 'gvenkateswaran3@gmail.com',
+            replyTo: email,
+            subject: `New Project Inquiry from ${name} (${service || 'General'})`,
+            text: `Name: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'Not provided'}\nProject Type: ${service || 'General'}\n\nProject Details:\n${message}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd;">
+                <h2 style="color: #006c4b; margin-top: 0; font-size: 20px;">New Project Inquiry Received</h2>
+                <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2eae3;">
+                  <p style="margin: 6px 0;"><strong>👤 Customer Name:</strong> ${name}</p>
+                  <p style="margin: 6px 0;"><strong>✉️ Email Address:</strong> <a href="mailto:${email}" style="color: #006c4b;">${email}</a></p>
+                  <p style="margin: 6px 0;"><strong>📞 Phone Number:</strong> <a href="tel:${phone}" style="color: #006c4b; font-weight: bold; text-decoration: none;">${phone || 'Not provided'}</a></p>
+                  <p style="margin: 6px 0;"><strong>💼 Project Type:</strong> ${service || 'General Inquiry'}</p>
+                </div>
+                <p style="margin-bottom: 8px;"><strong>📝 Project Details:</strong></p>
+                <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42;">
+                  ${message.replace(/\n/g, '<br>')}
+                </div>
+                <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
+                <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to gvenkateswaran3@gmail.com via Gmail SMTP</p>
+              </div>
+            `
+          });
+          console.log('[GMAIL SMTP SUCCESS] Email sent! Message ID:', mailInfo.messageId);
+          emailSent = true;
+        } catch (gmailErr) {
+          console.error('[GMAIL SMTP ERROR]', gmailErr.message);
+        }
+      }
+
+      // 2. Secondary: Brevo API fallback
+      const brevoApiKey = process.env.BREVO_API_KEY;
+      if (!emailSent && brevoApiKey) {
+        try {
+          const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+              'api-key': brevoApiKey.trim(),
+              'accept': 'application/json',
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify({
+              sender: { name: 'Studio.Dev Portfolio', email: 'gvenkateswaran3@gmail.com' },
+              to: [{ email: 'gvenkateswaran3@gmail.com', name: 'Venkateswaran' }],
+              replyTo: { email: email, name: name },
+              subject: `New Project Inquiry from ${name} (${service || 'General'})`,
+              htmlContent: `
+                <div style="font-family: Arial, sans-serif; padding: 20px; color: #161d19; background-color: #f4fbf4; border-radius: 8px;">
+                  <h2 style="color: #006c4b; margin-top: 0;">New Project Inquiry</h2>
+                  <p><strong>Sender Name:</strong> ${name}</p>
+                  <p><strong>Sender Email:</strong> ${email}</p>
+                  <p><strong>Sender Phone Number:</strong> ${phone || 'Not provided'}</p>
+                  <p><strong>Project Type:</strong> ${service || 'General Inquiry'}</p>
+                  <p><strong>Project Details:</strong></p>
+                  <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #006c4b; border-radius: 4px; font-size: 14px; line-height: 1.6;">
+                    ${message.replace(/\n/g, '<br>')}
+                  </div>
+                </div>
+              `
+            })
+          });
+
+          const brevoResult = await brevoResponse.json();
+          if (brevoResponse.ok) {
+            console.log('[BREVO SUCCESS] Email dispatched via Brevo API! Message ID:', brevoResult.messageId);
+          } else {
+            console.error('[BREVO API ERROR]', brevoResult);
+          }
+        } catch (brevoErr) {
+          console.error('[BREVO API EXCEPTION]', brevoErr.message);
+        }
+      }
     });
 
   } catch (err) {
