@@ -2,13 +2,89 @@
  * Lumina Studio - Interactive Logic & Application Engine
  */
 
+function updateHeaderOffset() {
+  const header = document.querySelector('.glass-nav') || document.querySelector('header');
+  if (header) {
+    const height = header.offsetHeight;
+    document.documentElement.style.setProperty('--header-height', `${height}px`);
+  }
+}
+
+window.addEventListener('load', updateHeaderOffset);
+window.addEventListener('resize', updateHeaderOffset);
+
 document.addEventListener('DOMContentLoaded', () => {
+  updateHeaderOffset();
   initMobileMenu();
+  initSmoothScroll();
   initScrollSpy();
   initRevealAnimations();
+  initHeroTypewriter();
+  initHeroParallax();
   initProjectModals();
+  initCardCarousels();
   initContactForm();
 });
+
+/* 0. Hero Typewriter & Mouse Parallax */
+function initHeroTypewriter() {
+  const target = document.getElementById('hero-typed-text');
+  if (!target) return;
+
+  const phrases = [
+    'custom websites',
+    'business landing pages',
+    'celebration sites',
+    'academic portfolios',
+    'e-commerce stores'
+  ];
+
+  let phraseIdx = 0;
+  let charIdx = 0;
+  let isDeleting = false;
+
+  function typeStep() {
+    const currentPhrase = phrases[phraseIdx];
+    if (isDeleting) {
+      charIdx--;
+      target.textContent = currentPhrase.substring(0, charIdx);
+    } else {
+      charIdx++;
+      target.textContent = currentPhrase.substring(0, charIdx);
+    }
+
+    let typeSpeed = isDeleting ? 40 : 80;
+
+    if (!isDeleting && charIdx === currentPhrase.length) {
+      typeSpeed = 2200;
+      isDeleting = true;
+    } else if (isDeleting && charIdx === 0) {
+      isDeleting = false;
+      phraseIdx = (phraseIdx + 1) % phrases.length;
+      typeSpeed = 400;
+    }
+
+    setTimeout(typeStep, typeSpeed);
+  }
+
+  typeStep();
+}
+
+function initHeroParallax() {
+  const blob = document.getElementById('hero-interactive-blob');
+  const heroSec = document.getElementById('home') || document.getElementById('hero');
+
+  if (!blob || !heroSec) return;
+
+  heroSec.addEventListener('mousemove', (e) => {
+    const { clientX, clientY } = e;
+    const { innerWidth, innerHeight } = window;
+    const offsetX = (clientX / innerWidth - 0.5) * 35;
+    const offsetY = (clientY / innerHeight - 0.5) * 35;
+
+    blob.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+  });
+}
 
 /* 1. Mobile Menu Toggle */
 function initMobileMenu() {
@@ -38,6 +114,49 @@ function initMobileMenu() {
       if (iconOpen && iconClose) {
         iconOpen.classList.remove('hidden');
         iconClose.classList.add('hidden');
+      }
+    });
+  });
+}
+
+/* Smooth Navigation Scroll with Dynamic Sticky Header Offset */
+function initSmoothScroll() {
+  const anchorLinks = document.querySelectorAll('a[href^="#"]');
+
+  anchorLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetId = link.getAttribute('href');
+      if (!targetId || targetId === '#') return;
+
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        e.preventDefault();
+
+        // Native scrollIntoView respects CSS scroll-margin-top
+        targetElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+
+        // Close mobile menu drawer if open
+        const mobileMenu = document.getElementById('mobile-menu');
+        const toggleBtn = document.getElementById('mobile-menu-btn');
+        const iconOpen = document.getElementById('menu-icon-open');
+        const iconClose = document.getElementById('menu-icon-close');
+
+        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+          if (iconOpen && iconClose) {
+            iconOpen.classList.remove('hidden');
+            iconClose.classList.add('hidden');
+          }
+        }
+
+        // Update URL hash cleanly without viewport jump
+        if (history.pushState) {
+          history.pushState(null, null, targetId);
+        }
       }
     });
   });
@@ -140,10 +259,31 @@ const projectData = {
   }
 };
 
+/* 4. Interactive Project Detail Modals & Auto Image Carousel */
 let currentCarouselImages = [];
 let currentCarouselIndex = 0;
+let modalAutoTimer = null;
+let isModalCarouselHovered = false;
 
-function updateCarouselDisplay(index) {
+function startModalAutoPlay() {
+  stopModalAutoPlay();
+  if (!currentCarouselImages || currentCarouselImages.length <= 1) return;
+
+  modalAutoTimer = setInterval(() => {
+    if (!isModalCarouselHovered) {
+      updateCarouselDisplay(currentCarouselIndex + 1, false);
+    }
+  }, 3500);
+}
+
+function stopModalAutoPlay() {
+  if (modalAutoTimer) {
+    clearInterval(modalAutoTimer);
+    modalAutoTimer = null;
+  }
+}
+
+function updateCarouselDisplay(index, resetTimer = true) {
   if (!currentCarouselImages || currentCarouselImages.length === 0) return;
 
   if (index < 0) currentCarouselIndex = currentCarouselImages.length - 1;
@@ -189,16 +329,22 @@ function updateCarouselDisplay(index) {
       }
     });
   }
+
+  if (resetTimer) {
+    startModalAutoPlay();
+  }
 }
 
 function initCarousel(images) {
   currentCarouselImages = images || [];
   currentCarouselIndex = 0;
+  isModalCarouselHovered = false;
 
   const prevBtn = document.getElementById('carousel-prev-btn');
   const nextBtn = document.getElementById('carousel-next-btn');
   const dotsContainer = document.getElementById('carousel-dots');
   const thumbsContainer = document.getElementById('carousel-thumbnails');
+  const mainImg = document.getElementById('carousel-main-image');
 
   if (dotsContainer) {
     dotsContainer.innerHTML = currentCarouselImages.map((_, i) =>
@@ -229,7 +375,13 @@ function initCarousel(images) {
   if (prevBtn) prevBtn.onclick = () => updateCarouselDisplay(currentCarouselIndex - 1);
   if (nextBtn) nextBtn.onclick = () => updateCarouselDisplay(currentCarouselIndex + 1);
 
-  updateCarouselDisplay(0);
+  if (mainImg && mainImg.parentElement) {
+    mainImg.parentElement.onmouseenter = () => { isModalCarouselHovered = true; };
+    mainImg.parentElement.onmouseleave = () => { isModalCarouselHovered = false; };
+  }
+
+  updateCarouselDisplay(0, false);
+  startModalAutoPlay();
 }
 
 function initProjectModals() {
@@ -268,6 +420,7 @@ function initProjectModals() {
   });
 
   const closeModal = () => {
+    stopModalAutoPlay();
     modal.classList.add('hidden');
     modal.classList.remove('flex');
     document.body.style.overflow = '';
@@ -308,6 +461,64 @@ function initProjectModals() {
       }
     }, { passive: true });
   }
+}
+
+/* 5. Auto-Play Homepage Project Cards */
+function initCardCarousels() {
+  const cardKeys = Object.keys(projectData);
+
+  cardKeys.forEach(key => {
+    const data = projectData[key];
+    const imgEl = document.getElementById(`card-img-${key}`);
+    const badgeEl = document.getElementById(`badge-${key}`);
+    const prevBtn = document.querySelector(`[data-card-prev="${key}"]`);
+    const nextBtn = document.querySelector(`[data-card-next="${key}"]`);
+
+    if (!imgEl || !data || !data.images || data.images.length === 0) return;
+
+    // Preload all project images for instant smooth transitions
+    data.images.forEach(src => {
+      const img = new Image();
+      img.src = src;
+    });
+
+    let cardIndex = 0;
+
+    const setCardSlide = (index) => {
+      if (index < 0) cardIndex = data.images.length - 1;
+      else if (index >= data.images.length) cardIndex = 0;
+      else cardIndex = index;
+
+      imgEl.style.opacity = '0.4';
+      setTimeout(() => {
+        imgEl.src = data.images[cardIndex];
+        imgEl.style.opacity = '1';
+      }, 120);
+
+      if (badgeEl) {
+        badgeEl.textContent = `${cardIndex + 1} / ${data.images.length}`;
+      }
+    };
+
+    // Auto-advance every 3.2 seconds
+    setInterval(() => {
+      setCardSlide(cardIndex + 1);
+    }, 3200);
+
+    if (prevBtn) {
+      prevBtn.onclick = (e) => {
+        e.stopPropagation();
+        setCardSlide(cardIndex - 1);
+      };
+    }
+
+    if (nextBtn) {
+      nextBtn.onclick = (e) => {
+        e.stopPropagation();
+        setCardSlide(cardIndex + 1);
+      };
+    }
+  });
 }
 
 /* 5. Contact Form Validation & Email Dispatch */

@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Studio.Dev | Venkateswaran – Junior Freelance Web Developer</title>
   <meta name="description"
-    content="High-end web application design & custom front-end development by Alex. Fast, modern digital experiences built with precision and clarity.">
+    content="High-end web application design & custom front-end development by Venkateswaran. Fast, modern digital experiences built with precision and clarity.">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -64,11 +64,11 @@
 
       <!-- Desktop Nav Menu -->
       <div class="hidden md:flex items-center gap-8">
+         <a href="#home"
+          class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Home</a>
          <a href="#services"
           class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Services</a>
         <a href="#work" class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Work</a>
-        <a href="#process"
-          class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Process</a>
         <a href="#about" class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">About</a>
       </div>
 
@@ -98,8 +98,6 @@
         <a href="#work" class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">Work</a>
         <a href="#services"
           class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">Services</a>
-        <a href="#process"
-          class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">Process</a>
         <a href="#about" class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">About</a>
         <a href="#contact"
           class="mobile-nav-link inline-flex items-center justify-center bg-primary text-white hover:text-white px-6 py-3 rounded-full text-sm font-semibold uppercase tracking-wider mt-2">
@@ -111,95 +109,66 @@
 
   <main class="pt-[80px]">
 
-    <!-- HERO SECTION -->
-    <section id="hero"
-      class="relative min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-6 md:px-12 py-8 md:py-12 overflow-hidden">
+    <!-- HERO / HOME SECTION -->
+    <section id="home"
+      class="relative min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-6 md:px-12 py-10 md:py-16 overflow-hidden">
       <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div class="hero-blob w-full h-[550px] max-w-[750px] rounded-full"></div>
+        <div id="hero-interactive-blob" class="hero-blob w-full h-[550px] max-w-[750px] rounded-full transition-transform duration-300 ease-out"></div>
       </div>
 
-      <div class="max-w-[960px] mx-auto text-center relative z-10 reveal-on-scroll my-auto">
+      <div class="max-w-[980px] mx-auto text-center relative z-10 my-auto">
+        <!-- Live Status Badge -->
         <div
-          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container text-primary text-xs font-semibold uppercase tracking-wider mb-6">
-          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Available for Q3/Q4 Projects
+          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container/80 backdrop-blur-md text-primary text-xs font-semibold uppercase tracking-wider mb-6 border border-primary/20 shadow-sm">
+          <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span> Available for New Projects • Premium
         </div>
-        <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-on-surface mb-6 leading-tight max-w-full break-words px-2">
-          I build fast, modern websites & applications for ambitious brands
+
+        <!-- Dynamic Typing Headline -->
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-on-surface mb-6 leading-tight break-words">
+          I build <span id="hero-typed-text" class="text-primary underline decoration-primary-container decoration-4 underline-offset-8">custom websites</span><br class="hidden sm:inline"> for growing brands & personal moments.
         </h1>
-        <p class="text-lg md:text-xl text-on-surface-variant mb-10 max-w-2xl mx-auto font-normal leading-relaxed">
-          Hi, I'm Venkat. A junior freelance web developer specializing in clean, high-performance digital experiences
-          engineered for clarity and conversion.
+
+        <p class="text-lg md:text-xl text-on-surface-variant mb-8 max-w-2xl mx-auto font-normal leading-relaxed">
+          Hi, I'm Venkateswaran. Full-stack web developer turning your vision into fast, modern, and high-converting websites.
         </p>
+
+       
+
+        <!-- Call to Action Buttons -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a href="#work"
-            class="w-full sm:w-auto inline-flex items-center justify-center bg-primary text-white hover:text-white px-8 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-on-primary-container hover:scale-105 soft-shadow">
-            View My Work
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-white hover:text-white px-8 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-on-primary-container hover:scale-105 soft-shadow">
+            View My Work <span class="material-symbols-outlined text-sm">arrow_downward</span>
           </a>
           <a href="#contact"
-            class="w-full sm:w-auto inline-flex items-center justify-center bg-transparent border border-outline text-on-surface px-8 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:border-primary hover:text-primary">
-            Let's Talk
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-transparent border border-outline text-on-surface px-8 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:border-primary hover:text-primary hover:bg-surface-container/50">
+            Get Instant Quote <span class="material-symbols-outlined text-sm">chat</span>
           </a>
         </div>
-      </div>
-    </section>
 
-    <!-- ABOUT SECTION -->
-    <section id="about"
-      class="px-6 md:px-12 py-20 md:py-32 bg-surface-container-lowest border-y border-outline-variant/20">
-      <div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
-        <div class="md:col-span-5 relative order-2 md:order-1 reveal-on-scroll">
-          <div class="relative rounded-2xl overflow-hidden soft-shadow-lg group">
-            <img src="public/Vk.png"
-              alt="Venkat - Junior Web Developer"
-              class="w-full h-auto aspect-[4/5] object-cover transition-transform duration-500 group-hover:scale-105">
-            <div class="absolute inset-0 bg-gradient-to-t from-on-surface/40 via-transparent to-transparent opacity-60">
-            </div>
-            <div class="absolute bottom-6 left-6 right-6 text-surface-bright">
-              <p class="text-xs uppercase tracking-widest font-semibold opacity-90">Founder & Developer</p>
-              <p class="text-xl font-bold">Venkateswaran G</p>
-            </div>
+        <!-- Live Interactive Performance Highlights -->
+        <div class="mt-12 pt-8 border-t border-outline-variant/20 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
+            <p class="text-2xl font-extrabold text-primary">100%</p>
+            <p class="text-xs text-on-surface-variant font-medium mt-1">Responsive & Mobile First</p>
           </div>
-        </div>
-
-        <div class="md:col-span-7 md:col-start-6 order-1 md:order-2 reveal-on-scroll">
-          <div class="inline-block text-xs font-semibold uppercase tracking-wider text-primary mb-2">About & Philosophy
+          <div class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
+            <p class="text-2xl font-extrabold text-primary">3–5 Days</p>
+            <p class="text-xs text-on-surface-variant font-medium mt-1">Fast Turnaround</p>
           </div>
-          <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-6">Precision & Clarity in Every Pixel.</h2>
-          <p class="text-lg text-on-surface-variant mb-6 leading-relaxed">
-            With over 1 years of engineering experience across modern web stacks, I craft digital products that are
-            visually striking and architecturally sound. I believe in reduction—stripping away non-essentials to
-            highlight what truly moves your business forward.
-          </p>
-          <p class="text-base text-on-surface-variant mb-8 leading-relaxed">
-            My collaborative process aligns technical craftsmanship directly with your revenue and branding goals. Every
-            line of code is optimized for extreme speed, accessibility, and smooth maintenance.
-          </p>
-
-          <div>
-            <h3 class="text-xs font-semibold text-on-surface-variant mb-4 uppercase tracking-widest">Core Technical
-              Stack</h3>
-            <div class="flex flex-wrap gap-2.5">
-              <span
-                class="inline-flex items-center bg-surface-container text-on-surface px-4 py-2 rounded-full text-xs font-medium border border-outline-variant/30">React
-                & Next.js 14</span>
-              <span
-                class="inline-flex items-center bg-surface-container text-on-surface px-4 py-2 rounded-full text-xs font-medium border border-outline-variant/30">TypeScript</span>
-              <span
-                class="inline-flex items-center bg-surface-container text-on-surface px-4 py-2 rounded-full text-xs font-medium border border-outline-variant/30">Tailwind
-                CSS & Vanilla CSS</span>
-              <span
-                class="inline-flex items-center bg-surface-container text-on-surface px-4 py-2 rounded-full text-xs font-medium border border-outline-variant/30">Node.js
-                & REST APIs</span>
-              <span
-                class="inline-flex items-center bg-surface-container text-on-surface px-4 py-2 rounded-full text-xs font-medium border border-outline-variant/30">Headless
-                Shopify & E-commerce</span>
-            </div>
+          <div class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
+            <p class="text-2xl font-extrabold text-primary">SEO & Speed</p>
+            <p class="text-xs text-on-surface-variant font-medium mt-1">Sub-second Load Times</p>
+          </div>
+          <div class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
+            <p class="text-2xl font-extrabold text-primary">24/7</p>
+            <p class="text-xs text-on-surface-variant font-medium mt-1">Support & Delivery</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SERVICES SECTION (BENTO GRID) -->
+   <!-- SERVICES SECTION (BENTO GRID) -->
     <section id="services" class="px-6 md:px-12 py-20 md:py-32">
       <div class="max-w-[1200px] mx-auto">
         <div class="text-left mb-14 reveal-on-scroll">
@@ -276,7 +245,7 @@
       </div>
     </section>
 
-    <!-- RECENT WORK SECTION -->
+    <!-- RECENT WORK / FEATURED PORTFOLIO SECTION -->
     <section id="work" class="px-6 md:px-12 py-20 md:py-32 bg-surface-container-low border-y border-outline-variant/20">
       <div class="max-w-[1200px] mx-auto">
         <div class="text-left mb-14 reveal-on-scroll">
@@ -289,11 +258,25 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- Project 1: SuperMarketApp -->
           <article
-            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll">
-            <div class="aspect-video w-full overflow-hidden relative group">
-              <img src="public/Supermarket img/5.png"
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll" data-card-key="supermarket">
+            <div class="aspect-video w-full overflow-hidden relative group/card">
+              <img id="card-img-supermarket" src="public/Supermarket img/5.png"
                 alt="SuperMarketApp Grocery Platform"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                class="w-full h-full object-cover transition-all duration-500">
+              
+              <button data-card-prev="supermarket" aria-label="Previous image"
+                class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface/85 hover:bg-surface text-on-surface hover:text-primary shadow-sm backdrop-blur-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-10">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+              </button>
+              <button data-card-next="supermarket" aria-label="Next image"
+                class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface/85 hover:bg-surface text-on-surface hover:text-primary shadow-sm backdrop-blur-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-10">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+              </button>
+
+              <div class="absolute bottom-3 right-3 bg-on-surface/75 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm z-10">
+                <span class="w-1.5 h-1.5 bg-primary-container rounded-full animate-pulse"></span>
+                <span id="badge-supermarket">1 / 6</span>
+              </div>
             </div>
             <div class="p-8 flex flex-col flex-grow justify-between">
               <div>
@@ -316,11 +299,25 @@
 
           <!-- Project 2: Flower Shop -->
           <article
-            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll">
-            <div class="aspect-video w-full overflow-hidden relative group">
-              <img src="public/FlowerShop/1.png"
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll" data-card-key="flowershop">
+            <div class="aspect-video w-full overflow-hidden relative group/card">
+              <img id="card-img-flowershop" src="public/FlowerShop/1.png"
                 alt="Flower Shop Thanjavur Platform"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                class="w-full h-full object-cover transition-all duration-500">
+              
+              <button data-card-prev="flowershop" aria-label="Previous image"
+                class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface/85 hover:bg-surface text-on-surface hover:text-primary shadow-sm backdrop-blur-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-10">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+              </button>
+              <button data-card-next="flowershop" aria-label="Next image"
+                class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface/85 hover:bg-surface text-on-surface hover:text-primary shadow-sm backdrop-blur-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-10">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+              </button>
+
+              <div class="absolute bottom-3 right-3 bg-on-surface/75 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm z-10">
+                <span class="w-1.5 h-1.5 bg-primary-container rounded-full animate-pulse"></span>
+                <span id="badge-flowershop">1 / 5</span>
+              </div>
             </div>
             <div class="p-8 flex flex-col flex-grow justify-between">
               <div>
@@ -343,11 +340,25 @@
 
           <!-- Project 3: Seller Rocket -->
           <article
-            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll">
-            <div class="aspect-video w-full overflow-hidden relative group">
-              <img src="public/Seller Rocket/1.png"
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll" data-card-key="sellerrocket">
+            <div class="aspect-video w-full overflow-hidden relative group/card">
+              <img id="card-img-sellerrocket" src="public/Seller Rocket/1.png"
                 alt="Seller Rocket Platform"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                class="w-full h-full object-cover transition-all duration-500">
+              
+              <button data-card-prev="sellerrocket" aria-label="Previous image"
+                class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface/85 hover:bg-surface text-on-surface hover:text-primary shadow-sm backdrop-blur-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-10">
+                <span class="material-symbols-outlined text-lg">chevron_left</span>
+              </button>
+              <button data-card-next="sellerrocket" aria-label="Next image"
+                class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface/85 hover:bg-surface text-on-surface hover:text-primary shadow-sm backdrop-blur-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-10">
+                <span class="material-symbols-outlined text-lg">chevron_right</span>
+              </button>
+
+              <div class="absolute bottom-3 right-3 bg-on-surface/75 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm z-10">
+                <span class="w-1.5 h-1.5 bg-primary-container rounded-full animate-pulse"></span>
+                <span id="badge-sellerrocket">1 / 4</span>
+              </div>
             </div>
             <div class="p-8 flex flex-col flex-grow justify-between">
               <div>
@@ -371,63 +382,76 @@
       </div>
     </section>
 
-    <!-- PROCESS SECTION -->
-    <section id="process" class="px-6 md:px-12 py-20 md:py-32">
-      <div class="max-w-[1200px] mx-auto">
-        <div class="text-left mb-16 reveal-on-scroll">
-          <div class="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Workflow</div>
-          <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">How We Work Together</h2>
-          <p class="text-lg text-on-surface-variant max-w-2xl">A transparent, step-by-step process designed to ensure
-            clarity and timely project delivery.</p>
+    
+
+    <!-- ABOUT SECTION -->
+    <section id="about"
+      class="px-6 md:px-12 py-20 md:py-32 bg-surface-container-lowest border-y border-outline-variant/20">
+      <div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+        <div class="md:col-span-5 relative order-2 md:order-1 reveal-on-scroll">
+          <div class="relative rounded-2xl overflow-hidden soft-shadow-lg group">
+            <img src="public/Vk.png"
+              alt="Venkat - Junior Web Developer"
+              class="w-full h-auto aspect-[4/5] object-cover transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-on-surface/40 via-transparent to-transparent opacity-60">
+            </div>
+            <div class="absolute bottom-6 left-6 right-6 text-surface-bright">
+              <p class="text-xs uppercase tracking-widest font-semibold opacity-90">Founder & Developer</p>
+              <p class="text-xl font-bold">Venkateswaran G</p>
+            </div>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
-          <!-- Step 1 -->
-          <div
-            class="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/20 soft-shadow flex flex-col justify-between reveal-on-scroll">
-            <div>
-              <span class="text-4xl font-bold text-primary/30 block mb-4">01</span>
-              <h3 class="text-lg font-bold mb-2">Discovery</h3>
-              <p class="text-on-surface-variant text-sm leading-relaxed">We clarify goals, outline user flows, refine
-                requirements, and define precise project milestones.</p>
+        <div class="md:col-span-7 md:col-start-6 order-1 md:order-2 reveal-on-scroll">
+          <div class="inline-block text-xs font-semibold uppercase tracking-wider text-primary mb-2">About & Services
+          </div>
+          <h2 class="text-2xl md:text-3xl font-bold tracking-tight mb-4 text-on-surface">Full-Stack Web Developer | Custom Websites for Every Occasion</h2>
+          
+          <p class="text-base text-on-surface-variant mb-6 leading-relaxed">
+            I design and build fast, modern websites for businesses, students, and personal celebrations — turning your vision into a clean, responsive website.
+          </p>
+
+          <div class="mb-6">
+            <h3 class="text-xs font-semibold text-on-surface-variant mb-3 uppercase tracking-widest">What I Build</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <div class="p-3 rounded-xl bg-surface-container/60 border border-outline-variant/30 text-left hover:border-primary/40 transition-all">
+                <span class="text-lg block mb-1">🏢</span>
+                <p class="text-xs font-bold text-on-surface">Business & Academic</p>
+                <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">Landing pages, company profiles & portfolios</p>
+              </div>
+
+              <div class="p-3 rounded-xl bg-surface-container/60 border border-outline-variant/30 text-left hover:border-primary/40 transition-all">
+                <span class="text-lg block mb-1">💝</span>
+                <p class="text-xs font-bold text-on-surface">Celebration Sites</p>
+                <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">Weddings, birthdays, RSVPs & photo galleries</p>
+              </div>
+
+              <div class="p-3 rounded-xl bg-surface-container/60 border border-outline-variant/30 text-left hover:border-primary/40 transition-all">
+                <span class="text-lg block mb-1">🛒</span>
+                <p class="text-xs font-bold text-on-surface">E-Commerce Stores</p>
+                <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">Product catalogs, cart & online checkout</p>
+              </div>
             </div>
           </div>
 
-          <!-- Step 2 -->
-          <div
-            class="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/20 soft-shadow flex flex-col justify-between reveal-on-scroll">
-            <div>
-              <span class="text-4xl font-bold text-primary/30 block mb-4">02</span>
-              <h3 class="text-lg font-bold mb-2">Architecture</h3>
-              <p class="text-on-surface-variant text-sm leading-relaxed">Design tokens, component hierarchies, and
-                database schemas are defined before writing production code.</p>
+          <div class="mb-6">
+            <h3 class="text-xs font-semibold text-on-surface-variant mb-3 uppercase tracking-widest">Tech Stack</h3>
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">React</span>
+              <span class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">Next.js</span>
+              <span class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">TypeScript</span>
+              <span class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">Tailwind CSS</span>
+              <span class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">Node.js</span>
             </div>
           </div>
 
-          <!-- Step 3 -->
-          <div
-            class="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/20 soft-shadow flex flex-col justify-between reveal-on-scroll">
-            <div>
-              <span class="text-4xl font-bold text-primary/30 block mb-4">03</span>
-              <h3 class="text-lg font-bold mb-2">Development</h3>
-              <p class="text-on-surface-variant text-sm leading-relaxed">Clean, modular code built with continuous
-                integration, responsive testing, and weekly progress updates.</p>
-            </div>
-          </div>
-
-          <!-- Step 4 -->
-          <div
-            class="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/20 soft-shadow flex flex-col justify-between reveal-on-scroll">
-            <div>
-              <span class="text-4xl font-bold text-primary/30 block mb-4">04</span>
-              <h3 class="text-lg font-bold mb-2">Launch & Support</h3>
-              <p class="text-on-surface-variant text-sm leading-relaxed">Seamless deployment to production servers, DNS
-                setup, performance audits, and 30-day post-launch warranty.</p>
-            </div>
-          </div>
+          <p class="text-xs font-medium text-primary bg-primary/10 border border-primary/20 px-4 py-3 rounded-xl leading-relaxed">
+            ✨ Fast delivery, affordable pricing, and a design that actually reflects who you are or what your brand stands for.
+          </p>
         </div>
       </div>
     </section>
+
 
     <!-- CONTACT SECTION -->
     <section id="contact"
