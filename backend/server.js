@@ -99,18 +99,20 @@ app.post('/api/contact', async (req, res) => {
           subject: `New Project Inquiry from ${name} (${service || 'General'})`,
           text: `Name: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'Not provided'}\nProject Type: ${service || 'General'}\n\nProject Details:\n${message}`,
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 20px; color: #161d19; background-color: #f4fbf4; border-radius: 8px;">
-              <h2 style="color: #006c4b; margin-top: 0;">New Project Inquiry</h2>
-              <p><strong>Sender Name:</strong> ${name}</p>
-              <p><strong>Sender Email:</strong> ${email}</p>
-              <p><strong>Phone Number:</strong> ${phone || 'Not provided'}</p>
-              <p><strong>Project Type:</strong> ${service || 'General Inquiry'}</p>
-              <p><strong>Project Details:</strong></p>
-              <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #006c4b; border-radius: 4px; font-size: 14px; line-height: 1.6;">
+            <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd;">
+              <h2 style="color: #006c4b; margin-top: 0; font-size: 20px;">New Project Inquiry Received</h2>
+              <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2eae3;">
+                <p style="margin: 6px 0;"><strong>👤 Customer Name:</strong> ${name}</p>
+                <p style="margin: 6px 0;"><strong>✉️ Email Address:</strong> <a href="mailto:${email}" style="color: #006c4b;">${email}</a></p>
+                <p style="margin: 6px 0;"><strong>📞 Phone Number:</strong> <a href="tel:${phone}" style="color: #006c4b; font-weight: bold; text-decoration: none;">${phone || 'Not provided'}</a></p>
+                <p style="margin: 6px 0;"><strong>💼 Project Type:</strong> ${service || 'General Inquiry'}</p>
+              </div>
+              <p style="margin-bottom: 8px;"><strong>📝 Project Details:</strong></p>
+              <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42;">
                 ${message.replace(/\n/g, '<br>')}
               </div>
-              <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 20px;">
-              <p style="font-size: 12px; color: #6c7a71;">Dispatched via Gmail SMTP to gvenkateswaran3@gmail.com</p>
+              <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
+              <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to gvenkateswaran3@gmail.com via Gmail SMTP</p>
             </div>
           `
         });

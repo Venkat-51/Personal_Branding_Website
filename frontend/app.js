@@ -216,9 +216,10 @@ function initContactForm() {
 
     const recipient = 'gvenkateswaran3@gmail.com';
 
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.') || window.location.hostname.startsWith('10.');
     const host = window.location.hostname || 'localhost';
-    const primaryUrl = `${window.location.protocol}//${host}:5000/api/contact`;
-    const fallbackUrl = `${window.location.protocol}//${host}:5001/api/contact`;
+    const primaryUrl = isLocal ? `${window.location.protocol}//${host}:5000/api/contact` : 'https://personal-branding-website.onrender.com/api/contact';
+    const fallbackUrl = isLocal ? `${window.location.protocol}//${host}:5001/api/contact` : 'https://personal-branding-website.onrender.com/api/contact';
 
     // Try posting to Express Backend API (Port 5000 / 5001)
     const postToBackend = (url) => {
