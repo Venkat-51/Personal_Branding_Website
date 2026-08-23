@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio.Dev | Alex – Senior Freelance Web Developer</title>
+  <meta name="description"
+    content="High-end web application design & custom front-end development by Alex. Fast, modern digital experiences built with precision and clarity.">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS Framework Utility -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+
+  <!-- Custom Design Tokens & System Styles -->
+  <link rel="stylesheet" href="styles.css">
+
+  <script id="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'surface': '#f4fbf4',
+            'surface-dim': '#d4dcd5',
+            'surface-bright': '#f4fbf4',
+            'surface-container-lowest': '#ffffff',
+            'surface-container-low': '#eef6ee',
+            'surface-container': '#e8f0e9',
+            'surface-container-high': '#e2eae3',
+            'surface-container-highest': '#dde4dd',
+            'on-surface': '#161d19',
+            'on-surface-variant': '#3c4a42',
+            'primary': '#006c4b',
+            'on-primary': '#ffffff',
+            'primary-container': '#34d399',
+            'on-primary-container': '#00563b',
+            'outline': '#6c7a71',
+            'outline-variant': '#bbcac0'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="font-sans bg-surface text-on-surface antialiased relative">
+
+  <!-- Sticky Blurred Navigation Header -->
+  <header class="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
+    <nav class="flex justify-between items-center max-w-[1200px] mx-auto px-4 sm:px-6 md:px-12 py-3.5"
+      aria-label="Main Navigation">
+      <a href="#hero" class="text-xl sm:text-2xl font-bold tracking-tight text-on-surface hover:text-primary transition-colors flex-shrink-0">
+        Studio<span class="text-primary">.Dev</span>
+      </a>
+
+      <!-- Desktop Nav Menu -->
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#work" class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Work</a>
+        <a href="#services"
+          class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Services</a>
+        <a href="#process"
+          class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Process</a>
+        <a href="#about" class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">About</a>
+      </div>
+
+      <div class="hidden md:flex items-center">
+        <a href="#contact"
+          class="inline-flex items-center justify-center bg-primary text-white hover:text-white px-6 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-on-primary-container hover:shadow-md">
+          Hire Me
+        </a>
+      </div>
+
+      <!-- Mobile Menu Toggle Button (SVG Icon for bulletproof display) -->
+      <button id="mobile-menu-btn" class="md:hidden p-2 text-on-surface focus:outline-none flex items-center justify-center rounded-lg hover:bg-surface-container flex-shrink-0"
+        aria-label="Toggle navigation menu" aria-expanded="false">
+        <svg id="menu-icon-open" class="w-6 h-6 fill-current text-on-surface" viewBox="0 0 24 24">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </svg>
+        <svg id="menu-icon-close" class="w-6 h-6 fill-current text-on-surface hidden" viewBox="0 0 24 24">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </nav>
+
+    <!-- Mobile Navigation Drawer -->
+    <div id="mobile-menu"
+      class="hidden md:hidden bg-surface-container-lowest border-b border-outline-variant/30 px-6 py-6 shadow-lg">
+      <div class="flex flex-col gap-4">
+        <a href="#work" class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">Work</a>
+        <a href="#services"
+          class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">Services</a>
+        <a href="#process"
+          class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">Process</a>
+        <a href="#about" class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">About</a>
+        <a href="#contact"
+          class="mobile-nav-link inline-flex items-center justify-center bg-primary text-white hover:text-white px-6 py-3 rounded-full text-sm font-semibold uppercase tracking-wider mt-2">
+          Hire Me
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-[80px]">
+
+    <!-- HERO SECTION -->
+    <section id="hero"
+      class="relative min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-6 md:px-12 py-8 md:py-12 overflow-hidden">
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="hero-blob w-full h-[550px] max-w-[750px] rounded-full"></div>
+      </div>
+
+      <div class="max-w-[960px] mx-auto text-center relative z-10 reveal-on-scroll my-auto">
+        <div
+          class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container text-primary text-xs font-semibold uppercase tracking-wider mb-6">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Available for Q3/Q4 Projects
+        </div>
+        <h1 class="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-on-surface mb-6 leading-tight max-w-full break-words px-2">
+          I build fast, modern websites & applications for ambitious brands
+        </h1>
+        <p class="text-lg md:text-xl text-on-surface-variant mb-10 max-w-2xl mx-auto font-normal leading-relaxed">
+          Hi, I'm Alex. A senior freelance web developer specializing in clean, high-performance digital experiences
+          engineered for clarity and conversion.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a href="#work"
+            class="w-full sm:w-auto inline-flex items-center justify-center bg-primary text-white hover:text-white px-8 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-on-primary-container hover:scale-105 soft-shadow">
+            View My Work
+          </a>
+          <a href="#contact"
+            class="w-full sm:w-auto inline-flex items-center justify-center bg-transparent border border-outline text-on-surface px-8 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:border-primary hover:text-primary">
+            Let's Talk
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section id="about"
+      class="px-6 md:px-12 py-20 md:py-32 bg-surface-container-lowest border-y border-outline-variant/20">
+      <div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+        <div class="md:col-span-5 relative order-2 md:order-1 reveal-on-scroll">
+          <div class="relative rounded-2xl overflow-hidden soft-shadow-lg group">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80"
+              alt="Alex - Senior Web Developer"
+              class="w-full h-auto aspect-[4/5] object-cover transition-transform duration-500 group-hover:scale-105">
+            <div class="absolute inset-0 bg-gradient-to-t from-on-surface/40 via-transparent to-transparent opacity-60">
+            </div>
+            <div class="absolute bottom-6 left-6 right-6 text-surface-bright">
+              <p class="text-xs uppercase tracking-widest font-semibold opacity-90">Studio Lead & Developer</p>
+              <p class="text-xl font-bold">Alex Vance</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-7 md:col-start-6 order-1 md:order-2 reveal-on-scroll">
+          <div class="inline-block text-xs font-semibold uppercase tracking-wider text-primary mb-2">About & Philosophy
+          </div>
+          <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-6">Precision & Clarity in Every Pixel.</h2>
+          <p class="text-lg text-on-surface-variant mb-6 leading-relaxed">
+            With over 6 years of engineering experience across modern web stacks, I craft digital products that are
+            visually striking and architecturally sound. I believe in reduction—stripping away non-essentials to
+            highlight what truly moves your business forward.
+          </p>
+          <p class="text-base text-on-surface-variant mb-8 leading-relaxed">
+            My collaborative process aligns technical craftsmanship directly with your revenue and branding goals. Every
+            line of code is optimized for extreme speed, accessibility, and smooth maintenance.
+          </p>
+
+          <div>
+            <h3 class="text-xs font-semibold text-on-surface-variant mb-4 uppercase tracking-widest">Core Technical
+              Stack</h3>
+            <div class="flex flex-wrap gap-2.5">
+              <span
+                class="inline-flex items-center bg-surface-container text-on-surface px-4 py-2 rounded-full text-xs font-medium border border-outline-variant/30">React
+                & Next.js 14</span>
+              <span
+                class="inline-flex items-center bg-surface-container text-on-surface px-4 py-2 rounded-full text-xs font-medium border border-outline-variant/30">TypeScript</span>
+              <span
+                class="inline-flex items-center bg-surface-container text-on-surface px-4 py-2 rounded-full text-xs font-medium border border-outline-variant/30">Tailwind
+                CSS & Vanilla CSS</span>
+              <span
+                class="inline-flex items-center bg-surface-container text-on-surface px-4 py-2 rounded-full text-xs font-medium border border-outline-variant/30">Node.js
+                & REST APIs</span>
+              <span
+                class="inline-flex items-center bg-surface-container text-on-surface px-4 py-2 rounded-full text-xs font-medium border border-outline-variant/30">Headless
+                Shopify & E-commerce</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES SECTION (BENTO GRID) -->
+    <section id="services" class="px-6 md:px-12 py-20 md:py-32">
+      <div class="max-w-[1200px] mx-auto">
+        <div class="text-left mb-14 reveal-on-scroll">
+          <div class="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Capabilities</div>
+          <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">Focused Engineering Expertise</h2>
+          <p class="text-lg text-on-surface-variant max-w-2xl">End-to-end capabilities tailored to elevate startups and
+            established businesses.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Card 1 -->
+          <div
+            class="bg-surface-container-lowest p-8 rounded-2xl soft-shadow hover-lift border border-outline-variant/20 flex flex-col justify-between reveal-on-scroll">
+            <div>
+              <div
+                class="w-12 h-12 bg-primary-container/20 rounded-xl flex items-center justify-center mb-6 text-primary">
+                <span class="material-symbols-outlined text-2xl">web</span>
+              </div>
+              <h3 class="text-xl font-semibold mb-3">Website Design</h3>
+              <p class="text-on-surface-variant text-sm leading-relaxed">Clean, minimal user interfaces focused on high
+                readability, brand elegance, and conversion.</p>
+            </div>
+          </div>
+
+          <!-- Card 2 (Wide) -->
+          <div
+            class="bg-surface-container-lowest p-8 rounded-2xl soft-shadow hover-lift border border-outline-variant/20 lg:col-span-2 flex flex-col justify-between reveal-on-scroll">
+            <div>
+              <div
+                class="w-12 h-12 bg-primary-container/20 rounded-xl flex items-center justify-center mb-6 text-primary">
+                <span class="material-symbols-outlined text-2xl">code</span>
+              </div>
+              <h3 class="text-xl font-semibold mb-3">Custom Application Development</h3>
+              <p class="text-on-surface-variant text-sm leading-relaxed">Blazing-fast, responsive web applications built
+                using React, Next.js, and TypeScript. Optimized for sub-second page loads, SEO rankings, and seamless
+                user interaction.</p>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div
+            class="bg-surface-container-lowest p-8 rounded-2xl soft-shadow hover-lift border border-outline-variant/20 flex flex-col justify-between reveal-on-scroll">
+            <div>
+              <div
+                class="w-12 h-12 bg-primary-container/20 rounded-xl flex items-center justify-center mb-6 text-primary">
+                <span class="material-symbols-outlined text-2xl">shopping_cart</span>
+              </div>
+              <h3 class="text-xl font-semibold mb-3">E-Commerce Solutions</h3>
+              <p class="text-on-surface-variant text-sm leading-relaxed">Custom Shopify storefronts and headless
+                checkout flows designed to streamline customer purchasing journeys.</p>
+            </div>
+          </div>
+
+          <!-- Card 4 (Full Width banner card) -->
+          <div
+            class="bg-surface-container-lowest p-8 rounded-2xl soft-shadow hover-lift border border-outline-variant/20 lg:col-span-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 reveal-on-scroll">
+            <div class="flex items-center gap-6">
+              <div
+                class="w-12 h-12 bg-primary-container/20 rounded-xl flex items-center justify-center flex-shrink-0 text-primary">
+                <span class="material-symbols-outlined text-2xl">handyman</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-semibold mb-1">Performance Tuning & Maintenance</h3>
+                <p class="text-on-surface-variant text-sm">Ongoing code audits, Core Web Vitals optimization, analytics
+                  setup, and security updates.</p>
+              </div>
+            </div>
+            <a href="#contact"
+              class="inline-flex items-center gap-2 text-primary font-semibold hover:underline text-sm flex-shrink-0">
+              Request Audit <span class="material-symbols-outlined text-base">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECENT WORK SECTION -->
+    <section id="work" class="px-6 md:px-12 py-20 md:py-32 bg-surface-container-low border-y border-outline-variant/20">
+      <div class="max-w-[1200px] mx-auto">
+        <div class="text-left mb-14 reveal-on-scroll">
+          <div class="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Featured Portfolio</div>
+          <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">Recent Projects</h2>
+          <p class="text-lg text-on-surface-variant max-w-2xl">Selected work delivered with rigorous attention to speed,
+            craft, and responsive design.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <!-- Project 1 -->
+          <article
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll">
+            <div class="aspect-video w-full overflow-hidden relative group">
+              <img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=800&q=80"
+                alt="EcoStore E-commerce Platform"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+            </div>
+            <div class="p-8 flex flex-col flex-grow justify-between">
+              <div>
+                <span class="text-xs font-medium text-primary uppercase tracking-wider block mb-2">E-commerce /
+                  Next.js</span>
+                <h3 class="text-xl font-bold mb-2">EcoStore Platform</h3>
+                <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Sustainable fashion storefront built
+                  with Next.js 14 and Headless Shopify integration.</p>
+              </div>
+              <button data-project-target="ecostore"
+                class="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:underline self-start">
+                View Details <span class="material-symbols-outlined text-base">arrow_forward</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Project 2 -->
+          <article
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll">
+            <div class="aspect-video w-full overflow-hidden relative group">
+              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80"
+                alt="Nova SaaS Dashboard"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+            </div>
+            <div class="p-8 flex flex-col flex-grow justify-between">
+              <div>
+                <span class="text-xs font-medium text-primary uppercase tracking-wider block mb-2">Web App /
+                  React</span>
+                <h3 class="text-xl font-bold mb-2">Nova SaaS Dashboard</h3>
+                <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Real-time telemetry and server analytics
+                  monitoring interface for cloud startups.</p>
+              </div>
+              <button data-project-target="nova"
+                class="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:underline self-start">
+                View Details <span class="material-symbols-outlined text-base">arrow_forward</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Project 3 -->
+          <article
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll">
+            <div class="aspect-video w-full overflow-hidden relative group">
+              <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80"
+                alt="Lumina Minimal Portfolio"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+            </div>
+            <div class="p-8 flex flex-col flex-grow justify-between">
+              <div>
+                <span class="text-xs font-medium text-primary uppercase tracking-wider block mb-2">Design System &
+                  Site</span>
+                <h3 class="text-xl font-bold mb-2">Lumina Portfolio</h3>
+                <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">High-end minimalist studio portfolio
+                  showcasing performance-first design system.</p>
+              </div>
+              <button data-project-target="lumina"
+                class="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:underline self-start">
+                View Details <span class="material-symbols-outlined text-base">arrow_forward</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS SECTION -->
+    <section id="process" class="px-6 md:px-12 py-20 md:py-32">
+      <div class="max-w-[1200px] mx-auto">
+        <div class="text-left mb-16 reveal-on-scroll">
+          <div class="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Workflow</div>
+          <h2 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">How We Work Together</h2>
+          <p class="text-lg text-on-surface-variant max-w-2xl">A transparent, step-by-step process designed to ensure
+            clarity and timely project delivery.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+          <!-- Step 1 -->
+          <div
+            class="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/20 soft-shadow flex flex-col justify-between reveal-on-scroll">
+            <div>
+              <span class="text-4xl font-bold text-primary/30 block mb-4">01</span>
+              <h3 class="text-lg font-bold mb-2">Discovery</h3>
+              <p class="text-on-surface-variant text-sm leading-relaxed">We clarify goals, outline user flows, refine
+                requirements, and define precise project milestones.</p>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div
+            class="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/20 soft-shadow flex flex-col justify-between reveal-on-scroll">
+            <div>
+              <span class="text-4xl font-bold text-primary/30 block mb-4">02</span>
+              <h3 class="text-lg font-bold mb-2">Architecture</h3>
+              <p class="text-on-surface-variant text-sm leading-relaxed">Design tokens, component hierarchies, and
+                database schemas are defined before writing production code.</p>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div
+            class="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/20 soft-shadow flex flex-col justify-between reveal-on-scroll">
+            <div>
+              <span class="text-4xl font-bold text-primary/30 block mb-4">03</span>
+              <h3 class="text-lg font-bold mb-2">Development</h3>
+              <p class="text-on-surface-variant text-sm leading-relaxed">Clean, modular code built with continuous
+                integration, responsive testing, and weekly progress updates.</p>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div
+            class="bg-surface-container-lowest p-8 rounded-2xl border border-outline-variant/20 soft-shadow flex flex-col justify-between reveal-on-scroll">
+            <div>
+              <span class="text-4xl font-bold text-primary/30 block mb-4">04</span>
+              <h3 class="text-lg font-bold mb-2">Launch & Support</h3>
+              <p class="text-on-surface-variant text-sm leading-relaxed">Seamless deployment to production servers, DNS
+                setup, performance audits, and 30-day post-launch warranty.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section id="contact"
+      class="px-6 md:px-12 py-20 md:py-32 bg-surface-container-lowest border-t border-outline-variant/20">
+      <div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12">
+        <div class="md:col-span-5 reveal-on-scroll">
+          <div class="text-xs font-semibold uppercase tracking-wider text-primary mb-2">Get In Touch</div>
+          <h2 class="text-3xl md:text-5xl font-bold tracking-tight mb-6">Let's build something remarkable.</h2>
+          <p class="text-lg text-on-surface-variant mb-8 leading-relaxed">
+            Have an upcoming project, redesign, or engineering challenge? Send a brief message and I'll respond within
+            24 hours.
+          </p>
+
+          <div class="space-y-4">
+            <div class="flex items-center gap-4 text-on-surface-variant">
+              <span class="material-symbols-outlined text-primary">mail</span>
+              <span class="text-base font-medium">gvenkateswaran3@gmail.com</span>
+            </div>
+            <div class="flex items-center gap-4 text-on-surface-variant">
+              <span class="material-symbols-outlined text-primary">location_on</span>
+              <span class="text-base font-medium">Available Worldwide (EST / PST / GMT)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-7 md:col-start-6 reveal-on-scroll">
+          <!-- Contact Form Container -->
+          <div class="bg-surface p-8 md:p-10 rounded-2xl border border-outline-variant/30 soft-shadow">
+            <div id="form-status" class="hidden mb-6"></div>
+
+            <form id="contact-form" class="space-y-8" novalidate>
+              <div>
+                <label for="contact-name"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">Your Name
+                  *</label>
+                <input type="text" id="contact-name" name="name" required class="minimal-input"
+                  placeholder="e.g. Sarah Jenkins">
+              </div>
+
+              <div>
+                <label for="contact-email"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">Email
+                  Address *</label>
+                <input type="email" id="contact-email" name="email" required class="minimal-input"
+                  placeholder="sarah@company.com">
+              </div>
+
+              <div>
+                <label for="contact-phone"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">Phone
+                  Number</label>
+                <input type="tel" id="contact-phone" name="phone" class="minimal-input"
+                  placeholder="+1 (555) 000-0000">
+              </div>
+
+              <div>
+                <label for="contact-service"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">Project
+                  Type</label>
+                <select id="contact-service" name="service" class="minimal-input bg-transparent cursor-pointer">
+                  <option value="web-app">Custom Web Application</option>
+                  <option value="website">Website Design & Development</option>
+                  <option value="ecommerce">E-Commerce Platform</option>
+                  <option value="audit">Performance Audit & Optimization</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="contact-message"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">Project
+                  Details *</label>
+                <textarea id="contact-message" name="message" rows="4" required class="minimal-input resize-none"
+                  placeholder="Tell me about your project goals, timeline, and budget..."></textarea>
+              </div>
+
+              <button type="submit" id="submit-btn"
+                class="w-full inline-flex items-center justify-center bg-primary text-white hover:text-white px-8 py-4 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-on-primary-container hover:shadow-lg">
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-surface-container-highest border-t border-outline-variant/30 py-12 px-6 md:px-12">
+    <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+      <div>
+        <a href="#hero" class="text-xl font-bold tracking-tight text-on-surface">Studio<span
+            class="text-primary">.Dev</span></a>
+        <p class="text-xs text-on-surface-variant mt-1">© 2026 Studio.Dev. Built with precision & clarity.</p>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <a href="https://github.com" target="_blank" rel="noopener"
+          class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors">GitHub</a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener"
+          class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors">LinkedIn</a>
+        <a href="https://twitter.com" target="_blank" rel="noopener"
+          class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant hover:text-primary transition-colors">Twitter</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- INTERACTIVE PROJECT MODAL -->
+  <div id="project-modal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4" role="dialog"
+    aria-modal="true">
+    <div
+      class="bg-surface-container-lowest max-w-2xl w-full rounded-2xl soft-shadow-lg overflow-hidden border border-outline-variant/30 flex flex-col max-h-[90vh]">
+      <div class="p-6 border-b border-outline-variant/20 flex justify-between items-center bg-surface">
+        <div>
+          <span id="modal-category" class="text-xs font-semibold text-primary uppercase tracking-wider"></span>
+          <h3 id="modal-title" class="text-xl font-bold"></h3>
+        </div>
+        <button id="close-modal-btn" class="p-2 text-on-surface-variant hover:text-on-surface focus:outline-none"
+          aria-label="Close modal">
+          <span class="material-symbols-outlined text-2xl">close</span>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-6">
+        <img id="modal-image" src="" alt=""
+          class="w-full h-56 object-cover rounded-xl border border-outline-variant/20">
+        <p id="modal-description" class="text-on-surface-variant text-sm leading-relaxed"></p>
+
+        <div>
+          <h4 class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-3">Technologies Used</h4>
+          <div id="modal-stack" class="flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+
+      <div class="p-4 bg-surface border-t border-outline-variant/20 flex justify-end">
+        <button id="close-modal-footer-btn" onclick="document.getElementById('project-modal').classList.add('hidden')"
+          class="px-6 py-2 bg-primary text-on-primary text-xs font-semibold uppercase tracking-wider rounded-full hover:bg-on-primary-container">
+          Close Preview
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Engine -->
+  <script src="app.js"></script>
+</body>
+
+</html>

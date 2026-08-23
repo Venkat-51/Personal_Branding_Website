@@ -1,0 +1,165 @@
+/* Lumina Studio - Modern Minimalist Design System */
+
+:root {
+  /* Surface & Background */
+  --color-surface: #f4fbf4;
+  --color-surface-dim: #d4dcd5;
+  --color-surface-bright: #f4fbf4;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #eef6ee;
+  --color-surface-container: #e8f0e9;
+  --color-surface-high: #e2eae3;
+  --color-surface-highest: #dde4dd;
+
+  /* Typography & On-Surface */
+  --color-on-surface: #161d19;
+  --color-on-surface-variant: #3c4a42;
+  --color-outline: #6c7a71;
+  --color-outline-variant: #bbcac0;
+
+  /* Brand Accents */
+  --color-primary: #006c4b;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #34d399;
+  --color-on-primary-container: #00563b;
+  --color-surface-tint: #006c4b;
+  --color-primary-hover: #00563b;
+
+  /* Typography Defaults */
+  --font-inter: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Radii */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --container-max: 1200px;
+}
+
+/* Base Smooth Scroll & Reset */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+body {
+  font-family: var(--font-inter);
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  max-width: 100vw;
+  position: relative;
+}
+
+/* Glassmorphism Cards & Header */
+.glass-nav {
+  background: rgba(244, 251, 244, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 108, 75, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+/* Shadows & Elevating Hover */
+.soft-shadow {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+
+.soft-shadow-lg {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px rgba(0, 108, 75, 0.08);
+}
+
+/* Ambient Hero Glowing Blob */
+.hero-blob {
+  background: radial-gradient(circle at center, #34d399 0%, rgba(52, 211, 153, 0.2) 40%, transparent 70%);
+  filter: blur(70px);
+  animation: pulseBlob 8s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+@keyframes pulseBlob {
+  0% {
+    transform: scale(0.95) translateY(0);
+    opacity: 0.18;
+  }
+  100% {
+    transform: scale(1.08) translateY(-15px);
+    opacity: 0.28;
+  }
+}
+
+/* Scroll-triggered reveal class */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Minimal Input Styling */
+.minimal-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--color-outline-variant);
+  border-radius: 0;
+  padding: 12px 4px;
+  width: 100%;
+  color: var(--color-on-surface);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.minimal-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-primary);
+  box-shadow: 0 2px 0 0 var(--color-primary);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
+}
+
+/* Modal Overlay Animation */
+.modal-backdrop {
+  background: rgba(22, 29, 25, 0.6);
+  backdrop-filter: blur(6px);
+  transition: opacity 0.3s ease;
+}
