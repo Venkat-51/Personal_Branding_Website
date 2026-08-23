@@ -58,15 +58,15 @@
   <header class="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
     <nav class="flex justify-between items-center max-w-[1200px] mx-auto px-4 sm:px-6 md:px-12 py-3.5"
       aria-label="Main Navigation">
-      <a href="#hero" class="text-xl sm:text-2xl font-bold tracking-tight text-on-surface hover:text-primary transition-colors flex-shrink-0">
+      <a href="#hero"
+        class="text-xl sm:text-2xl font-bold tracking-tight text-on-surface hover:text-primary transition-colors flex-shrink-0">
         Studio<span class="text-primary">.Dev</span>
       </a>
 
       <!-- Desktop Nav Menu -->
       <div class="hidden md:flex items-center gap-8">
-         <a href="#home"
-          class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Home</a>
-         <a href="#services"
+        <a href="#home" class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Home</a>
+        <a href="#services"
           class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Services</a>
         <a href="#work" class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">Work</a>
         <a href="#about" class="text-on-surface-variant font-medium hover:text-primary transition-colors py-1">About</a>
@@ -80,13 +80,15 @@
       </div>
 
       <!-- Mobile Menu Toggle Button (SVG Icon for bulletproof display) -->
-      <button id="mobile-menu-btn" class="md:hidden p-2 text-on-surface focus:outline-none flex items-center justify-center rounded-lg hover:bg-surface-container flex-shrink-0"
+      <button id="mobile-menu-btn"
+        class="md:hidden p-2 text-on-surface focus:outline-none flex items-center justify-center rounded-lg hover:bg-surface-container flex-shrink-0"
         aria-label="Toggle navigation menu" aria-expanded="false">
         <svg id="menu-icon-open" class="w-6 h-6 fill-current text-on-surface" viewBox="0 0 24 24">
-          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
         </svg>
         <svg id="menu-icon-close" class="w-6 h-6 fill-current text-on-surface hidden" viewBox="0 0 24 24">
-          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
         </svg>
       </button>
     </nav>
@@ -95,9 +97,10 @@
     <div id="mobile-menu"
       class="hidden md:hidden bg-surface-container-lowest border-b border-outline-variant/30 px-6 py-6 shadow-lg">
       <div class="flex flex-col gap-4">
-        <a href="#work" class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">Work</a>
+        <a href="#home" class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">Home</a>
         <a href="#services"
           class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">Services</a>
+        <a href="#work" class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">Work</a>
         <a href="#about" class="mobile-nav-link text-lg text-on-surface font-medium py-2 hover:text-primary">About</a>
         <a href="#contact"
           class="mobile-nav-link inline-flex items-center justify-center bg-primary text-white hover:text-white px-6 py-3 rounded-full text-sm font-semibold uppercase tracking-wider mt-2">
@@ -113,7 +116,9 @@
     <section id="home"
       class="relative min-h-[calc(100vh-80px)] flex flex-col items-center justify-center px-6 md:px-12 py-10 md:py-16 overflow-hidden">
       <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div id="hero-interactive-blob" class="hero-blob w-full h-[550px] max-w-[750px] rounded-full transition-transform duration-300 ease-out"></div>
+        <div id="hero-interactive-blob"
+          class="hero-blob w-full h-[550px] max-w-[750px] rounded-full transition-transform duration-300 ease-out">
+        </div>
       </div>
 
       <div class="max-w-[980px] mx-auto text-center relative z-10 my-auto">
@@ -124,15 +129,19 @@
         </div>
 
         <!-- Dynamic Typing Headline -->
-        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-on-surface mb-6 leading-tight break-words">
-          I build <span id="hero-typed-text" class="text-primary underline decoration-primary-container decoration-4 underline-offset-8">custom websites</span><br class="hidden sm:inline"> for growing brands & personal moments.
+        <h1
+          class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-on-surface mb-6 leading-tight break-words">
+          I build <span id="hero-typed-text"
+            class="text-primary underline decoration-primary-container decoration-4 underline-offset-8">custom
+            websites</span><br class="hidden sm:inline"> for growing brands & personal moments.
         </h1>
 
         <p class="text-lg md:text-xl text-on-surface-variant mb-8 max-w-2xl mx-auto font-normal leading-relaxed">
-          Hi, I'm Venkateswaran. Full-stack web developer turning your vision into fast, modern, and high-converting websites.
+          Hi, I'm Venkateswaran. Full-stack web developer turning your vision into fast, modern, and high-converting
+          websites.
         </p>
 
-       
+
 
         <!-- Call to Action Buttons -->
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -148,19 +157,23 @@
 
         <!-- Live Interactive Performance Highlights -->
         <div class="mt-12 pt-8 border-t border-outline-variant/20 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-          <div class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
+          <div
+            class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
             <p class="text-2xl font-extrabold text-primary">100%</p>
             <p class="text-xs text-on-surface-variant font-medium mt-1">Responsive & Mobile First</p>
           </div>
-          <div class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
+          <div
+            class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
             <p class="text-2xl font-extrabold text-primary">3–5 Days</p>
             <p class="text-xs text-on-surface-variant font-medium mt-1">Fast Turnaround</p>
           </div>
-          <div class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
+          <div
+            class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
             <p class="text-2xl font-extrabold text-primary">SEO & Speed</p>
             <p class="text-xs text-on-surface-variant font-medium mt-1">Sub-second Load Times</p>
           </div>
-          <div class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
+          <div
+            class="p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
             <p class="text-2xl font-extrabold text-primary">24/7</p>
             <p class="text-xs text-on-surface-variant font-medium mt-1">Support & Delivery</p>
           </div>
@@ -168,7 +181,7 @@
       </div>
     </section>
 
-   <!-- SERVICES SECTION (BENTO GRID) -->
+    <!-- SERVICES SECTION (BENTO GRID) -->
     <section id="services" class="px-6 md:px-12 py-20 md:py-32">
       <div class="max-w-[1200px] mx-auto">
         <div class="text-left mb-14 reveal-on-scroll">
@@ -258,12 +271,12 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- Project 1: SuperMarketApp -->
           <article
-            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll" data-card-key="supermarket">
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll"
+            data-card-key="supermarket">
             <div class="aspect-video w-full overflow-hidden relative group/card">
-              <img id="card-img-supermarket" src="public/Supermarket img/5.png"
-                alt="SuperMarketApp Grocery Platform"
+              <img id="card-img-supermarket" src="public/Supermarket img/5.png" alt="SuperMarketApp Grocery Platform"
                 class="w-full h-full object-cover transition-all duration-500">
-              
+
               <button data-card-prev="supermarket" aria-label="Previous image"
                 class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface/85 hover:bg-surface text-on-surface hover:text-primary shadow-sm backdrop-blur-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-10">
                 <span class="material-symbols-outlined text-lg">chevron_left</span>
@@ -273,16 +286,19 @@
                 <span class="material-symbols-outlined text-lg">chevron_right</span>
               </button>
 
-              <div class="absolute bottom-3 right-3 bg-on-surface/75 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm z-10">
+              <div
+                class="absolute bottom-3 right-3 bg-on-surface/75 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm z-10">
                 <span class="w-1.5 h-1.5 bg-primary-container rounded-full animate-pulse"></span>
                 <span id="badge-supermarket">1 / 6</span>
               </div>
             </div>
             <div class="p-8 flex flex-col flex-grow justify-between">
               <div>
-                <span class="text-xs font-medium text-primary uppercase tracking-wider block mb-2">E-commerce / Mobile Web App</span>
+                <span class="text-xs font-medium text-primary uppercase tracking-wider block mb-2">E-commerce / Mobile
+                  Web App</span>
                 <h3 class="text-xl font-bold mb-2">SuperMarketApp</h3>
-                <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Enables users to browse, select, and purchase fresh groceries with fast delivery through a clean mobile shopping experience.</p>
+                <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Enables users to browse, select, and
+                  purchase fresh groceries with fast delivery through a clean mobile shopping experience.</p>
               </div>
               <div class="flex items-center justify-between gap-3 pt-2 border-t border-outline-variant/20">
                 <button data-project-target="supermarket"
@@ -299,12 +315,12 @@
 
           <!-- Project 2: Flower Shop -->
           <article
-            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll" data-card-key="flowershop">
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll"
+            data-card-key="flowershop">
             <div class="aspect-video w-full overflow-hidden relative group/card">
-              <img id="card-img-flowershop" src="public/FlowerShop/1.png"
-                alt="Flower Shop Thanjavur Platform"
+              <img id="card-img-flowershop" src="public/FlowerShop/1.png" alt="Flower Shop Thanjavur Platform"
                 class="w-full h-full object-cover transition-all duration-500">
-              
+
               <button data-card-prev="flowershop" aria-label="Previous image"
                 class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface/85 hover:bg-surface text-on-surface hover:text-primary shadow-sm backdrop-blur-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-10">
                 <span class="material-symbols-outlined text-lg">chevron_left</span>
@@ -314,16 +330,19 @@
                 <span class="material-symbols-outlined text-lg">chevron_right</span>
               </button>
 
-              <div class="absolute bottom-3 right-3 bg-on-surface/75 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm z-10">
+              <div
+                class="absolute bottom-3 right-3 bg-on-surface/75 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm z-10">
                 <span class="w-1.5 h-1.5 bg-primary-container rounded-full animate-pulse"></span>
                 <span id="badge-flowershop">1 / 5</span>
               </div>
             </div>
             <div class="p-8 flex flex-col flex-grow justify-between">
               <div>
-                <span class="text-xs font-medium text-primary uppercase tracking-wider block mb-2">E-commerce / Florist Platform</span>
+                <span class="text-xs font-medium text-primary uppercase tracking-wider block mb-2">E-commerce / Florist
+                  Platform</span>
                 <h3 class="text-xl font-bold mb-2">Flower Shop Thanjavur</h3>
-                <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Handcrafted bouquets & floral decor website featuring custom bouquet configurator and WhatsApp instant order integration.</p>
+                <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Handcrafted bouquets & floral decor
+                  website featuring custom bouquet configurator and WhatsApp instant order integration.</p>
               </div>
               <div class="flex items-center justify-between gap-3 pt-2 border-t border-outline-variant/20">
                 <button data-project-target="flowershop"
@@ -340,12 +359,12 @@
 
           <!-- Project 3: Seller Rocket -->
           <article
-            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll" data-card-key="sellerrocket">
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll"
+            data-card-key="sellerrocket">
             <div class="aspect-video w-full overflow-hidden relative group/card">
-              <img id="card-img-sellerrocket" src="public/Seller Rocket/1.png"
-                alt="Seller Rocket Platform"
+              <img id="card-img-sellerrocket" src="public/Seller Rocket/1.png" alt="Seller Rocket Platform"
                 class="w-full h-full object-cover transition-all duration-500">
-              
+
               <button data-card-prev="sellerrocket" aria-label="Previous image"
                 class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface/85 hover:bg-surface text-on-surface hover:text-primary shadow-sm backdrop-blur-md flex items-center justify-center transition-all opacity-80 hover:opacity-100 z-10">
                 <span class="material-symbols-outlined text-lg">chevron_left</span>
@@ -355,16 +374,19 @@
                 <span class="material-symbols-outlined text-lg">chevron_right</span>
               </button>
 
-              <div class="absolute bottom-3 right-3 bg-on-surface/75 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm z-10">
+              <div
+                class="absolute bottom-3 right-3 bg-on-surface/75 backdrop-blur-md text-white text-[10px] font-semibold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm z-10">
                 <span class="w-1.5 h-1.5 bg-primary-container rounded-full animate-pulse"></span>
                 <span id="badge-sellerrocket">1 / 4</span>
               </div>
             </div>
             <div class="p-8 flex flex-col flex-grow justify-between">
               <div>
-                <span class="text-xs font-medium text-primary uppercase tracking-wider block mb-2">E-Commerce / Lead Funnel</span>
+                <span class="text-xs font-medium text-primary uppercase tracking-wider block mb-2">E-Commerce / Lead
+                  Funnel</span>
                 <h3 class="text-xl font-bold mb-2">Seller Rocket Platform</h3>
-                <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Connects businesses with expert e-commerce solutions including Amazon management, Shopify setup, and WordPress development.</p>
+                <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">Connects businesses with expert
+                  e-commerce solutions including Amazon management, Shopify setup, and WordPress development.</p>
               </div>
               <div class="flex items-center justify-between gap-3 pt-2 border-t border-outline-variant/20">
                 <button data-project-target="sellerrocket"
@@ -382,7 +404,7 @@
       </div>
     </section>
 
-    
+
 
     <!-- ABOUT SECTION -->
     <section id="about"
@@ -390,8 +412,7 @@
       <div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
         <div class="md:col-span-5 relative order-2 md:order-1 reveal-on-scroll">
           <div class="relative rounded-2xl overflow-hidden soft-shadow-lg group">
-            <img src="public/Vk.png"
-              alt="Venkat - Junior Web Developer"
+            <img src="public/Vk.png" alt="Venkat - Junior Web Developer"
               class="w-full h-auto aspect-[4/5] object-cover transition-transform duration-500 group-hover:scale-105">
             <div class="absolute inset-0 bg-gradient-to-t from-on-surface/40 via-transparent to-transparent opacity-60">
             </div>
@@ -405,31 +426,39 @@
         <div class="md:col-span-7 md:col-start-6 order-1 md:order-2 reveal-on-scroll">
           <div class="inline-block text-xs font-semibold uppercase tracking-wider text-primary mb-2">About & Services
           </div>
-          <h2 class="text-2xl md:text-3xl font-bold tracking-tight mb-4 text-on-surface">Full-Stack Web Developer | Custom Websites for Every Occasion</h2>
-          
+          <h2 class="text-2xl md:text-3xl font-bold tracking-tight mb-4 text-on-surface">Full-Stack Web Developer |
+            Custom Websites for Every Occasion</h2>
+
           <p class="text-base text-on-surface-variant mb-6 leading-relaxed">
-            I design and build fast, modern websites for businesses, students, and personal celebrations — turning your vision into a clean, responsive website.
+            I design and build fast, modern websites for businesses, students, and personal celebrations — turning your
+            vision into a clean, responsive website.
           </p>
 
           <div class="mb-6">
             <h3 class="text-xs font-semibold text-on-surface-variant mb-3 uppercase tracking-widest">What I Build</h3>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-              <div class="p-3 rounded-xl bg-surface-container/60 border border-outline-variant/30 text-left hover:border-primary/40 transition-all">
+              <div
+                class="p-3 rounded-xl bg-surface-container/60 border border-outline-variant/30 text-left hover:border-primary/40 transition-all">
                 <span class="text-lg block mb-1">🏢</span>
                 <p class="text-xs font-bold text-on-surface">Business & Academic</p>
-                <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">Landing pages, company profiles & portfolios</p>
+                <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">Landing pages, company profiles &
+                  portfolios</p>
               </div>
 
-              <div class="p-3 rounded-xl bg-surface-container/60 border border-outline-variant/30 text-left hover:border-primary/40 transition-all">
+              <div
+                class="p-3 rounded-xl bg-surface-container/60 border border-outline-variant/30 text-left hover:border-primary/40 transition-all">
                 <span class="text-lg block mb-1">💝</span>
                 <p class="text-xs font-bold text-on-surface">Celebration Sites</p>
-                <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">Weddings, birthdays, RSVPs & photo galleries</p>
+                <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">Weddings, birthdays, RSVPs & photo
+                  galleries</p>
               </div>
 
-              <div class="p-3 rounded-xl bg-surface-container/60 border border-outline-variant/30 text-left hover:border-primary/40 transition-all">
+              <div
+                class="p-3 rounded-xl bg-surface-container/60 border border-outline-variant/30 text-left hover:border-primary/40 transition-all">
                 <span class="text-lg block mb-1">🛒</span>
                 <p class="text-xs font-bold text-on-surface">E-Commerce Stores</p>
-                <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">Product catalogs, cart & online checkout</p>
+                <p class="text-[11px] text-on-surface-variant leading-tight mt-0.5">Product catalogs, cart & online
+                  checkout</p>
               </div>
             </div>
           </div>
@@ -437,16 +466,24 @@
           <div class="mb-6">
             <h3 class="text-xs font-semibold text-on-surface-variant mb-3 uppercase tracking-widest">Tech Stack</h3>
             <div class="flex flex-wrap gap-2">
-              <span class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">React</span>
-              <span class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">Next.js</span>
-              <span class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">TypeScript</span>
-              <span class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">Tailwind CSS</span>
-              <span class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">Node.js</span>
+              <span
+                class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">React</span>
+              <span
+                class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">Next.js</span>
+              <span
+                class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">TypeScript</span>
+              <span
+                class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">Tailwind
+                CSS</span>
+              <span
+                class="inline-flex items-center bg-surface-container text-on-surface px-3 py-1.5 rounded-full text-xs font-medium border border-outline-variant/30">Node.js</span>
             </div>
           </div>
 
-          <p class="text-xs font-medium text-primary bg-primary/10 border border-primary/20 px-4 py-3 rounded-xl leading-relaxed">
-            ✨ Fast delivery, affordable pricing, and a design that actually reflects who you are or what your brand stands for.
+          <p
+            class="text-xs font-medium text-primary bg-primary/10 border border-primary/20 px-4 py-3 rounded-xl leading-relaxed">
+            ✨ Fast delivery, affordable pricing, and a design that actually reflects who you are or what your brand
+            stands for.
           </p>
         </div>
       </div>
@@ -505,8 +542,7 @@
                 <label for="contact-phone"
                   class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">Phone
                   Number</label>
-                <input type="tel" id="contact-phone" name="phone" class="minimal-input"
-                  placeholder="+1 (555) 000-0000">
+                <input type="tel" id="contact-phone" name="phone" class="minimal-input" placeholder="+1 (555) 000-0000">
               </div>
 
               <div>
@@ -585,8 +621,9 @@
           <div class="relative h-64 md:h-80 w-full overflow-hidden flex items-center justify-center bg-black/10">
             <img id="carousel-main-image" src="" alt="Project Screenshot"
               class="w-full h-full object-cover transition-opacity duration-300">
-            
-            <div class="absolute top-3 right-3 bg-on-surface/80 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+
+            <div
+              class="absolute top-3 right-3 bg-on-surface/80 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
               <span id="carousel-counter">1 / 1</span>
             </div>
 
@@ -600,11 +637,13 @@
               <span class="material-symbols-outlined text-2xl">chevron_right</span>
             </button>
 
-            <div id="carousel-dots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-on-surface/60 backdrop-blur-md">
+            <div id="carousel-dots"
+              class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-on-surface/60 backdrop-blur-md">
             </div>
           </div>
 
-          <div id="carousel-thumbnails" class="p-3 bg-surface flex items-center gap-2 overflow-x-auto border-t border-outline-variant/20 scrollbar-thin">
+          <div id="carousel-thumbnails"
+            class="p-3 bg-surface flex items-center gap-2 overflow-x-auto border-t border-outline-variant/20 scrollbar-thin">
           </div>
         </div>
 
