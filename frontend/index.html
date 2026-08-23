@@ -556,8 +556,34 @@
       </div>
 
       <div class="p-6 overflow-y-auto space-y-6">
-        <img id="modal-image" src="" alt=""
-          class="w-full h-56 object-cover rounded-xl border border-outline-variant/20">
+        <!-- Interactive Project Image Carousel -->
+        <div class="relative group rounded-xl overflow-hidden bg-surface-container border border-outline-variant/20">
+          <div class="relative h-64 md:h-80 w-full overflow-hidden flex items-center justify-center bg-black/10">
+            <img id="carousel-main-image" src="" alt="Project Screenshot"
+              class="w-full h-full object-cover transition-opacity duration-300">
+            
+            <div class="absolute top-3 right-3 bg-on-surface/80 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+              <span id="carousel-counter">1 / 1</span>
+            </div>
+
+            <button id="carousel-prev-btn" aria-label="Previous screenshot"
+              class="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-surface/90 hover:bg-surface text-on-surface hover:text-primary shadow-md backdrop-blur-md flex items-center justify-center transition-all opacity-90 hover:opacity-100 hover:scale-110">
+              <span class="material-symbols-outlined text-2xl">chevron_left</span>
+            </button>
+
+            <button id="carousel-next-btn" aria-label="Next screenshot"
+              class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-surface/90 hover:bg-surface text-on-surface hover:text-primary shadow-md backdrop-blur-md flex items-center justify-center transition-all opacity-90 hover:opacity-100 hover:scale-110">
+              <span class="material-symbols-outlined text-2xl">chevron_right</span>
+            </button>
+
+            <div id="carousel-dots" class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-on-surface/60 backdrop-blur-md">
+            </div>
+          </div>
+
+          <div id="carousel-thumbnails" class="p-3 bg-surface flex items-center gap-2 overflow-x-auto border-t border-outline-variant/20 scrollbar-thin">
+          </div>
+        </div>
+
         <p id="modal-description" class="text-on-surface-variant text-sm leading-relaxed"></p>
 
         <div>
