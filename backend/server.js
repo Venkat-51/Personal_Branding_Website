@@ -32,10 +32,15 @@ const cleanEmailUser = (process.env.EMAIL_USER || 'gvenkateswaran3@gmail.com').t
 
 // Transporter setup (Nodemailer Gmail SMTP)
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // Use STARTTLS
   auth: {
     user: cleanEmailUser,
     pass: cleanEmailPass
+  },
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
