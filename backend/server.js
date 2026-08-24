@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,12 +26,26 @@ try {
 app.use(cors());
 app.use(express.json());
 
+// Clean App Password (strip any whitespace)
+const cleanEmailPass = (process.env.EMAIL_PASS || '').replace(/\s+/g, '');
+const cleanEmailUser = (process.env.EMAIL_USER || 'gvenkateswaran3@gmail.com').trim();
+
+// Transporter setup (Nodemailer Gmail SMTP)
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: cleanEmailUser,
+    pass: cleanEmailPass
+  }
+});
+
 // GET /api/health - Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     service: 'Studio.Dev Backend Service',
+    gmailConfigured: !!cleanEmailPass,
     brevoConfigured: !!process.env.BREVO_API_KEY
   });
 });
@@ -40,7 +55,7 @@ app.post('/api/contact', async (req, res) => {
   try {
     const { name, email, phone, service, message } = req.body;
 
-    if (!name || !email || !service || !message) {
+    if (!name || !email || !service || service === 'Choose a project type' || !message) {
       return res.status(400).json({
         success: false,
         error: 'Name, email, project type, and message are required fields.'
@@ -89,8 +104,45 @@ app.post('/api/contact', async (req, res) => {
 
     // Dispatch email asynchronously in background (Non-blocking)
     setImmediate(async () => {
+      let emailSent = false;
+
+      // 1. Primary: Gmail SMTP
+      if (cleanEmailPass) {
+        try {
+          const mailInfo = await transporter.sendMail({
+            from: `"Studio.Dev Portfolio" <${cleanEmailUser}>`,
+            to: 'gvenkateswaran3@gmail.com',
+            replyTo: email,
+            subject: `New Project Inquiry from ${name} (${service || 'General'})`,
+            text: `Name: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'Not provided'}\nProject Type: ${service || 'General'}\n\nProject Details:\n${message}`,
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd;">
+                <h2 style="color: #006c4b; margin-top: 0; font-size: 20px;">New Project Inquiry Received</h2>
+                <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2eae3;">
+                  <p style="margin: 6px 0;"><strong>👤 Customer Name:</strong> ${name}</p>
+                  <p style="margin: 6px 0;"><strong>✉️ Email Address:</strong> <a href="mailto:${email}" style="color: #006c4b;">${email}</a></p>
+                  <p style="margin: 6px 0;"><strong>📞 Phone Number:</strong> <a href="tel:${phone}" style="color: #006c4b; font-weight: bold; text-decoration: none;">${phone || 'Not provided'}</a></p>
+                  <p style="margin: 6px 0;"><strong>💼 Project Type:</strong> ${service || 'General Inquiry'}</p>
+                </div>
+                <p style="margin-bottom: 8px;"><strong>📝 Project Details:</strong></p>
+                <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42;">
+                  ${message.replace(/\n/g, '<br>')}
+                </div>
+                <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
+                <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to gvenkateswaran3@gmail.com via Gmail SMTP</p>
+              </div>
+            `
+          });
+          console.log('[GMAIL SMTP SUCCESS] Email sent! Message ID:', mailInfo.messageId);
+          emailSent = true;
+        } catch (gmailErr) {
+          console.error('[GMAIL SMTP ERROR]', gmailErr.message);
+        }
+      }
+
+      // 2. Secondary: Brevo API fallback
       const brevoApiKey = process.env.BREVO_API_KEY;
-      if (brevoApiKey) {
+      if (!emailSent && brevoApiKey) {
         try {
           const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
             method: 'POST',
@@ -129,8 +181,6 @@ app.post('/api/contact', async (req, res) => {
         } catch (brevoErr) {
           console.error('[BREVO API EXCEPTION]', brevoErr.message);
         }
-      } else {
-        console.error('[BREVO API ERROR] BREVO_API_KEY is not configured.');
       }
     });
 
@@ -162,6 +212,7 @@ app.get('/api/contact', (req, res) => {
 if (require.main === module) {
   const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Studio.Dev Backend running on http://0.0.0.0:${PORT}`);
+    console.log(`- Gmail SMTP Enabled: ${!!cleanEmailPass}`);
     console.log(`- Brevo API Enabled: ${!!process.env.BREVO_API_KEY}`);
   });
 
@@ -171,7 +222,7 @@ if (require.main === module) {
       console.log(`[PORT BUSY] Port ${PORT} occupied, falling back to http://0.0.0.0:${ALT_PORT}`);
       app.listen(ALT_PORT, '0.0.0.0', () => {
         console.log(`🚀 Studio.Dev Backend running on http://0.0.0.0:${ALT_PORT}`);
-        console.log(`- Brevo API Enabled: ${!!process.env.BREVO_API_KEY}`);
+        console.log(`- Gmail SMTP Enabled: ${!!cleanEmailPass}`);
       });
     } else {
       console.error('Server error:', err);
