@@ -35,6 +35,9 @@ const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
   port: 587,
   secure: false, // Use STARTTLS
+  connectionTimeout: 30000,
+  greetingTimeout: 30000,
+  socketTimeout: 30000,
   auth: {
     user: cleanEmailUser,
     pass: cleanEmailPass
