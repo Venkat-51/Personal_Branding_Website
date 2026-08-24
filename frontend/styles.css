@@ -39,20 +39,22 @@
   --container-max: 1200px;
 
   /* Dynamic Header Offset */
-  --header-height: 90px;
+  --header-height: 64px;
+  --navbar-gap: 28px;
+  --scroll-offset: 92px;
 }
 
 /* Base Smooth Scroll & Reset */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: var(--header-height);
+  scroll-padding-top: var(--scroll-offset);
   overflow-x: hidden;
   max-width: 100vw;
 }
 
 section[id],
 [id] {
-  scroll-margin-top: var(--header-height);
+  scroll-margin-top: var(--scroll-offset);
 }
 
 body {

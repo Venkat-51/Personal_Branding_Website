@@ -3,10 +3,12 @@
  */
 
 function updateHeaderOffset() {
-  const header = document.querySelector('.glass-nav') || document.querySelector('header');
-  if (header) {
-    const height = header.offsetHeight;
+  const topNav = document.querySelector('header');
+  if (topNav) {
+    const height = topNav.offsetHeight;
+    const additionalGap = 28; // 28px visual spacing below navbar
     document.documentElement.style.setProperty('--header-height', `${height}px`);
+    document.documentElement.style.setProperty('--scroll-offset', `${height + additionalGap}px`);
   }
 }
 
@@ -25,6 +27,132 @@ document.addEventListener('DOMContentLoaded', () => {
   initCardCarousels();
   initContactForm();
 });
+
+function setActiveNav(targetId) {
+  const cleanId = targetId.replace(/^#/, '');
+  const navLinks = document.querySelectorAll('header nav a[href^="#"], #mobile-menu a[href^="#"]');
+  navLinks.forEach(link => {
+    const href = link.getAttribute('href').replace(/^#/, '');
+    if (href === cleanId) {
+      link.classList.add('text-primary', 'font-semibold');
+      link.classList.remove('text-on-surface-variant');
+    } else {
+      link.classList.remove('text-primary', 'font-semibold');
+      link.classList.add('text-on-surface-variant');
+    }
+  });
+}
+
+/* Smooth Navigation Scroll with Dynamic Sticky Header Offset */
+function initSmoothScroll() {
+  const anchorLinks = document.querySelectorAll('a[href^="#"]');
+
+  const getScrollOffset = () => {
+    const header = document.querySelector('header');
+    const headerHeight = header ? header.offsetHeight : 64;
+    return headerHeight + 28; // Navbar height + 28px additional visual gap
+  };
+
+  anchorLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      const targetId = link.getAttribute('href');
+      if (!targetId || targetId === '#') return;
+
+      if (targetId === '#home') {
+        e.preventDefault();
+        setActiveNav('home');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (history.pushState) history.pushState(null, null, targetId);
+        return;
+      }
+
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        e.preventDefault();
+
+        // Immediately update active nav link indicator
+        setActiveNav(targetId);
+
+        // Close mobile menu drawer first if open
+        const mobileMenu = document.getElementById('mobile-menu');
+        const toggleBtn = document.getElementById('mobile-menu-btn');
+        const iconOpen = document.getElementById('menu-icon-open');
+        const iconClose = document.getElementById('menu-icon-close');
+
+        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+          mobileMenu.classList.add('hidden');
+          if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+          if (iconOpen && iconClose) {
+            iconOpen.classList.remove('hidden');
+            iconClose.classList.add('hidden');
+          }
+        }
+
+        const totalOffset = getScrollOffset();
+        const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+        const offsetPosition = Math.max(0, elementPosition - totalOffset);
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
+
+        // Update URL hash cleanly without viewport jump
+        if (history.pushState) {
+          history.pushState(null, null, targetId);
+        }
+      }
+    });
+  });
+
+  // Handle direct hash navigation on initial load and page refresh (e.g., /#contact)
+  const handleInitialHash = () => {
+    if (window.location.hash) {
+      const hashTarget = document.querySelector(window.location.hash);
+      if (hashTarget) {
+        setTimeout(() => {
+          const totalOffset = getScrollOffset();
+          const elementPosition = hashTarget.getBoundingClientRect().top + window.pageYOffset;
+          const offsetPosition = Math.max(0, elementPosition - totalOffset);
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+          setActiveNav(window.location.hash);
+        }, 150);
+      }
+    }
+  };
+
+  window.addEventListener('load', handleInitialHash);
+  if (document.readyState === 'complete') {
+    handleInitialHash();
+  }
+}
+
+/* 2. Scroll Spy & Active Nav Link Indicator */
+function initScrollSpy() {
+  const sections = document.querySelectorAll('section[id]');
+  if (sections.length === 0) return;
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-15% 0px -45% 0px',
+    threshold: 0.1
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const activeId = entry.target.getAttribute('id');
+        setActiveNav(activeId);
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(section => observer.observe(section));
+}
 
 /* 0. Hero Typewriter & Mouse Parallax */
 function initHeroTypewriter() {
@@ -117,83 +245,6 @@ function initMobileMenu() {
       }
     });
   });
-}
-
-/* Smooth Navigation Scroll with Dynamic Sticky Header Offset */
-function initSmoothScroll() {
-  const anchorLinks = document.querySelectorAll('a[href^="#"]');
-
-  anchorLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-      const targetId = link.getAttribute('href');
-      if (!targetId || targetId === '#') return;
-
-      const targetElement = document.querySelector(targetId);
-      if (targetElement) {
-        e.preventDefault();
-
-        // Native scrollIntoView respects CSS scroll-margin-top
-        targetElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-
-        // Close mobile menu drawer if open
-        const mobileMenu = document.getElementById('mobile-menu');
-        const toggleBtn = document.getElementById('mobile-menu-btn');
-        const iconOpen = document.getElementById('menu-icon-open');
-        const iconClose = document.getElementById('menu-icon-close');
-
-        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-          mobileMenu.classList.add('hidden');
-          if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
-          if (iconOpen && iconClose) {
-            iconOpen.classList.remove('hidden');
-            iconClose.classList.add('hidden');
-          }
-        }
-
-        // Update URL hash cleanly without viewport jump
-        if (history.pushState) {
-          history.pushState(null, null, targetId);
-        }
-      }
-    });
-  });
-}
-
-/* 2. Scroll Spy & Active Nav Link Indicator */
-function initScrollSpy() {
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('nav a[href^="#"]');
-
-  if (sections.length === 0 || navLinks.length === 0) return;
-
-  const observerOptions = {
-    root: null,
-    rootMargin: '-20% 0px -60% 0px',
-    threshold: 0
-  };
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const activeId = entry.target.getAttribute('id');
-        navLinks.forEach(link => {
-          const href = link.getAttribute('href').substring(1);
-          if (href === activeId) {
-            link.classList.add('text-primary', 'font-semibold');
-            link.classList.remove('text-on-surface-variant');
-          } else {
-            link.classList.remove('text-primary', 'font-semibold');
-            link.classList.add('text-on-surface-variant');
-          }
-        });
-      }
-    });
-  }, observerOptions);
-
-  sections.forEach(section => observer.observe(section));
 }
 
 /* 3. Reveal on Scroll (Intersection Observer) */
@@ -348,7 +399,7 @@ function initCarousel(images) {
 
   if (dotsContainer) {
     dotsContainer.innerHTML = currentCarouselImages.map((_, i) =>
-      `<button data-slide-index="${i}" aria-label="Go to slide ${i+1}" class="${i === 0 ? 'w-5 h-2 bg-primary rounded-full' : 'w-2 h-2 bg-white/60 rounded-full'} transition-all duration-300"></button>`
+      `<button data-slide-index="${i}" aria-label="Go to slide ${i + 1}" class="${i === 0 ? 'w-5 h-2 bg-primary rounded-full' : 'w-2 h-2 bg-white/60 rounded-full'} transition-all duration-300"></button>`
     ).join('');
 
     dotsContainer.querySelectorAll('button').forEach(btn => {
@@ -361,7 +412,7 @@ function initCarousel(images) {
 
   if (thumbsContainer) {
     thumbsContainer.innerHTML = currentCarouselImages.map((imgSrc, i) =>
-      `<img src="${imgSrc}" alt="Thumbnail ${i+1}" data-thumb-index="${i}" class="w-16 h-12 object-cover rounded-md border ${i === 0 ? 'border-primary border-2 scale-105 opacity-100' : 'border-outline-variant/40 opacity-50'} hover:opacity-100 cursor-pointer transition-all">`
+      `<img src="${imgSrc}" alt="Thumbnail ${i + 1}" data-thumb-index="${i}" class="w-16 h-12 object-cover rounded-md border ${i === 0 ? 'border-primary border-2 scale-105 opacity-100' : 'border-outline-variant/40 opacity-50'} hover:opacity-100 cursor-pointer transition-all">`
     ).join('');
 
     thumbsContainer.querySelectorAll('img').forEach(thumb => {
@@ -582,18 +633,18 @@ function initContactForm() {
     };
 
     postToBackend(primaryUrl)
-    .then(data => handleSuccessResponse(data, name, email, recipient, serviceText, message, phone))
-    .catch(() => {
-      // Try fallback port 5001
-      postToBackend(fallbackUrl)
       .then(data => handleSuccessResponse(data, name, email, recipient, serviceText, message, phone))
       .catch(() => {
-        // Mailto fallback
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = originalBtnText;
-        triggerMailtoFallback(name, email, phone, serviceText, message, recipient);
+        // Try fallback port 5001
+        postToBackend(fallbackUrl)
+          .then(data => handleSuccessResponse(data, name, email, recipient, serviceText, message, phone))
+          .catch(() => {
+            // Mailto fallback
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+            triggerMailtoFallback(name, email, phone, serviceText, message, recipient);
+          });
       });
-    });
 
     function handleSuccessResponse(data, name, email, recipient, serviceText, message, phone) {
       submitBtn.disabled = false;
