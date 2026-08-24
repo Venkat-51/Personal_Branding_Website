@@ -588,11 +588,12 @@ function initContactForm() {
     const phoneInput = document.getElementById('contact-phone');
     const phone = phoneInput ? phoneInput.value.trim() : '';
     const serviceSelect = document.getElementById('contact-service');
-    const serviceText = serviceSelect ? serviceSelect.options[serviceSelect.selectedIndex].text : 'General Inquiry';
+    const serviceValue = serviceSelect ? serviceSelect.value : '';
+    const serviceText = (serviceSelect && serviceValue) ? serviceSelect.options[serviceSelect.selectedIndex].text : '';
     const message = document.getElementById('contact-message').value.trim();
 
-    if (!name || !email || !message) {
-      showStatus('Please fill in all required fields (Name, Email, Project Details).', 'error');
+    if (!name || !email || !serviceValue || !message) {
+      showStatus('Please fill in all required fields (Name, Email, Project Type, Project Details).', 'error');
       return;
     }
 
