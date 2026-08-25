@@ -28,13 +28,13 @@ app.use(express.json());
 
 // Clean App Password (strip any whitespace)
 const cleanEmailPass = (process.env.EMAIL_PASS || '').replace(/\s+/g, '');
-const cleanEmailUser = (process.env.EMAIL_USER || 'gvenkateswaran3@gmail.com').trim();
+const cleanEmailUser = (process.env.EMAIL_USER || 'venkateswaranuec@gmail.com').trim();
 
 // Transporter setup (Nodemailer Gmail SMTP)
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // Use SSL
+  port: 587,
+  secure: false, // Use STARTTLS
   connectionTimeout: 30000,
   greetingTimeout: 30000,
   socketTimeout: 30000,
@@ -86,7 +86,7 @@ app.post('/api/contact', async (req, res) => {
       phone: phone || 'Not provided',
       service: service || 'General Inquiry',
       message,
-      recipient: 'gvenkateswaran3@gmail.com',
+      recipient: 'venkateswaranuec@gmail.com',
       createdAt: new Date().toISOString()
     };
 
@@ -119,7 +119,7 @@ app.post('/api/contact', async (req, res) => {
         try {
           const mailInfo = await transporter.sendMail({
             from: `"Studio.Dev Portfolio" <${cleanEmailUser}>`,
-            to: 'gvenkateswaran3@gmail.com',
+            to: 'venkateswaranuec@gmail.com',
             replyTo: email,
             subject: `New Project Inquiry from ${name} (${service || 'General'})`,
             text: `Name: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'Not provided'}\nProject Type: ${service || 'General'}\n\nProject Details:\n${message}`,
@@ -137,7 +137,7 @@ app.post('/api/contact', async (req, res) => {
                   ${message.replace(/\n/g, '<br>')}
                 </div>
                 <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
-                <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to gvenkateswaran3@gmail.com via Gmail SMTP</p>
+                <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to venkateswaranuec@gmail.com via Gmail SMTP</p>
               </div>
             `
           });
@@ -160,8 +160,8 @@ app.post('/api/contact', async (req, res) => {
               'content-type': 'application/json'
             },
             body: JSON.stringify({
-              sender: { name: 'Studio.Dev Portfolio', email: 'gvenkateswaran3@gmail.com' },
-              to: [{ email: 'gvenkateswaran3@gmail.com', name: 'Venkateswaran' }],
+              sender: { name: 'Studio.Dev Portfolio', email: 'venkateswaranuec@gmail.com' },
+              to: [{ email: 'venkateswaranuec@gmail.com', name: 'Venkateswaran' }],
               replyTo: { email: email, name: name },
               subject: `New Project Inquiry from ${name} (${service || 'General'})`,
               htmlContent: `
