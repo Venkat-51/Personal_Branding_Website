@@ -57,8 +57,8 @@ const cleanEmailUser = (process.env.EMAIL_USER || 'gvenkateswaran3@gmail.com').t
 // Transporter setup (Nodemailer Gmail SMTP)
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // Use STARTTLS
+  port: 465,
+  secure: true, // Use SSL
   connectionTimeout: 30000,
   greetingTimeout: 30000,
   socketTimeout: 30000,
