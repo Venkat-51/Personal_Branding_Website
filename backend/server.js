@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -26,34 +25,12 @@ try {
 app.use(cors());
 app.use(express.json());
 
-// Clean App Password (strip any whitespace)
-const cleanEmailPass = (process.env.EMAIL_PASS || '').replace(/\s+/g, '');
-const cleanEmailUser = (process.env.EMAIL_USER || 'venkateswaranuec@gmail.com').trim();
-
-// Transporter setup (Nodemailer Gmail SMTP)
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // Use STARTTLS
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000,
-  auth: {
-    user: cleanEmailUser,
-    pass: cleanEmailPass
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
-
 // GET /api/health - Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
     service: 'Studio.Dev Backend Service',
-    gmailConfigured: !!cleanEmailPass,
     brevoConfigured: !!process.env.BREVO_API_KEY
   });
 });
@@ -110,20 +87,28 @@ app.post('/api/contact', async (req, res) => {
       data: newSubmission
     });
 
-    // Dispatch email asynchronously in background (Non-blocking)
+    // Dispatch email asynchronously via Brevo API (Non-blocking)
     setImmediate(async () => {
-      let emailSent = false;
+      const brevoApiKey = process.env.BREVO_API_KEY;
+      if (!brevoApiKey) {
+        console.warn('[BREVO WARNING] BREVO_API_KEY not set — email not dispatched.');
+        return;
+      }
 
-      // 1. Primary: Gmail SMTP
-      if (cleanEmailPass) {
-        try {
-          const mailInfo = await transporter.sendMail({
-            from: `"Studio.Dev Portfolio" <${cleanEmailUser}>`,
-            to: 'venkateswaranuec@gmail.com',
-            replyTo: email,
+      try {
+        const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'api-key': brevoApiKey.trim(),
+            'accept': 'application/json',
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            sender: { name: 'Studio.Dev Portfolio', email: 'venkateswaranuec@gmail.com' },
+            to: [{ email: 'venkateswaranuec@gmail.com', name: 'Venkateswaran' }],
+            replyTo: { email: email, name: name },
             subject: `New Project Inquiry from ${name} (${service || 'General'})`,
-            text: `Name: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'Not provided'}\nProject Type: ${service || 'General'}\n\nProject Details:\n${message}`,
-            html: `
+            htmlContent: `
               <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd;">
                 <h2 style="color: #006c4b; margin-top: 0; font-size: 20px;">New Project Inquiry Received</h2>
                 <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2eae3;">
@@ -137,58 +122,20 @@ app.post('/api/contact', async (req, res) => {
                   ${message.replace(/\n/g, '<br>')}
                 </div>
                 <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
-                <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to venkateswaranuec@gmail.com via Gmail SMTP</p>
+                <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically via Brevo API</p>
               </div>
             `
-          });
-          console.log('[GMAIL SMTP SUCCESS] Email sent! Message ID:', mailInfo.messageId);
-          emailSent = true;
-        } catch (gmailErr) {
-          console.error('[GMAIL SMTP ERROR]', gmailErr.message);
-        }
-      }
+          })
+        });
 
-      // 2. Secondary: Brevo API fallback
-      const brevoApiKey = process.env.BREVO_API_KEY;
-      if (!emailSent && brevoApiKey) {
-        try {
-          const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
-            headers: {
-              'api-key': brevoApiKey.trim(),
-              'accept': 'application/json',
-              'content-type': 'application/json'
-            },
-            body: JSON.stringify({
-              sender: { name: 'Studio.Dev Portfolio', email: 'venkateswaranuec@gmail.com' },
-              to: [{ email: 'venkateswaranuec@gmail.com', name: 'Venkateswaran' }],
-              replyTo: { email: email, name: name },
-              subject: `New Project Inquiry from ${name} (${service || 'General'})`,
-              htmlContent: `
-                <div style="font-family: Arial, sans-serif; padding: 20px; color: #161d19; background-color: #f4fbf4; border-radius: 8px;">
-                  <h2 style="color: #006c4b; margin-top: 0;">New Project Inquiry</h2>
-                  <p><strong>Sender Name:</strong> ${name}</p>
-                  <p><strong>Sender Email:</strong> ${email}</p>
-                  <p><strong>Sender Phone Number:</strong> ${phone || 'Not provided'}</p>
-                  <p><strong>Project Type:</strong> ${service || 'General Inquiry'}</p>
-                  <p><strong>Project Details:</strong></p>
-                  <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #006c4b; border-radius: 4px; font-size: 14px; line-height: 1.6;">
-                    ${message.replace(/\n/g, '<br>')}
-                  </div>
-                </div>
-              `
-            })
-          });
-
-          const brevoResult = await brevoResponse.json();
-          if (brevoResponse.ok) {
-            console.log('[BREVO SUCCESS] Email dispatched via Brevo API! Message ID:', brevoResult.messageId);
-          } else {
-            console.error('[BREVO API ERROR]', brevoResult);
-          }
-        } catch (brevoErr) {
-          console.error('[BREVO API EXCEPTION]', brevoErr.message);
+        const brevoResult = await brevoResponse.json();
+        if (brevoResponse.ok) {
+          console.log('[BREVO SUCCESS] Email dispatched via Brevo API! Message ID:', brevoResult.messageId);
+        } else {
+          console.error('[BREVO API ERROR]', brevoResult);
         }
+      } catch (brevoErr) {
+        console.error('[BREVO API EXCEPTION]', brevoErr.message);
       }
     });
 
@@ -220,7 +167,6 @@ app.get('/api/contact', (req, res) => {
 if (require.main === module) {
   const server = app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Studio.Dev Backend running on http://0.0.0.0:${PORT}`);
-    console.log(`- Gmail SMTP Enabled: ${!!cleanEmailPass}`);
     console.log(`- Brevo API Enabled: ${!!process.env.BREVO_API_KEY}`);
   });
 
@@ -230,7 +176,7 @@ if (require.main === module) {
       console.log(`[PORT BUSY] Port ${PORT} occupied, falling back to http://0.0.0.0:${ALT_PORT}`);
       app.listen(ALT_PORT, '0.0.0.0', () => {
         console.log(`🚀 Studio.Dev Backend running on http://0.0.0.0:${ALT_PORT}`);
-        console.log(`- Gmail SMTP Enabled: ${!!cleanEmailPass}`);
+        console.log(`- Brevo API Enabled: ${!!process.env.BREVO_API_KEY}`);
       });
     } else {
       console.error('Server error:', err);
