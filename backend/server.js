@@ -76,7 +76,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
-    service: 'Studio.Dev Backend Service',
+    service: 'y2solutions Backend Service',
     gmailConfigured: !!cleanEmailPass,
     brevoConfigured: !!process.env.BREVO_API_KEY
   });
@@ -142,7 +142,7 @@ app.post('/api/contact', async (req, res) => {
       if (cleanEmailPass) {
         try {
           const mailInfo = await transporter.sendMail({
-            from: `"Studio.Dev Portfolio" <${cleanEmailUser}>`,
+            from: `"y2solutions Portfolio" <${cleanEmailUser}>`,
             to: 'gvenkateswaran3@gmail.com',
             replyTo: email,
             subject: `New Project Inquiry from ${name} (${service || 'General'})`,
@@ -174,10 +174,10 @@ app.post('/api/contact', async (req, res) => {
         // Send confirmation email to customer
         try {
           const confirmInfo = await transporter.sendMail({
-            from: `"Studio.Dev Portfolio" <${cleanEmailUser}>`,
+            from: `"y2solutions Portfolio" <${cleanEmailUser}>`,
             to: email,
             subject: `We received your inquiry, ${name}! 🎉`,
-            text: `Hi ${name},\n\nThank you for reaching out! I've received your inquiry about "${service || 'your project'}" and will get back to you within 24 hours.\n\nHere's a summary of what you submitted:\n- Project Type: ${service || 'General Inquiry'}\n- Phone: ${phone || 'Not provided'}\n\nYour Message:\n${message}\n\nLooking forward to working with you!\n\nBest regards,\nVenkateswaran G\nStudio.Dev`,
+            text: `Hi ${name},\n\nThank you for reaching out! I've received your inquiry about "${service || 'your project'}" and will get back to you within 24 hours.\n\nHere's a summary of what you submitted:\n- Project Type: ${service || 'General Inquiry'}\n- Phone: ${phone || 'Not provided'}\n\nYour Message:\n${message}\n\nLooking forward to working with you!\n\nBest regards,\nVenkateswaran G\ny2solutions`,
             html: `
               <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd; max-width: 600px;">
                 <h2 style="color: #006c4b; margin-top: 0; font-size: 22px;">Thanks for reaching out, ${name}! 🎉</h2>
@@ -194,7 +194,7 @@ app.post('/api/contact', async (req, res) => {
                 <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">Looking forward to working with you!</p>
                 <p style="font-size: 15px; color: #3c4a42; margin-bottom: 4px;">Best regards,</p>
                 <p style="font-size: 16px; font-weight: bold; color: #006c4b; margin: 0;">Venkateswaran G</p>
-                <p style="font-size: 13px; color: #6c7a71; margin: 2px 0 0 0;">Studio.Dev</p>
+                <p style="font-size: 13px; color: #6c7a71; margin: 2px 0 0 0;">y2solutions</p>
                 <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
                 <p style="font-size: 11px; color: #6c7a71; margin: 0;">This is an automated confirmation. Please do not reply to this email.</p>
               </div>
@@ -219,7 +219,7 @@ app.post('/api/contact', async (req, res) => {
               'content-type': 'application/json'
             },
             body: JSON.stringify({
-              sender: { name: 'Studio.Dev Portfolio', email: 'gvenkateswaran3@gmail.com' },
+              sender: { name: 'y2solutions Portfolio', email: 'gvenkateswaran3@gmail.com' },
               to: [{ email: 'gvenkateswaran3@gmail.com', name: 'Venkateswaran' }],
               replyTo: { email: email, name: name },
               subject: `New Project Inquiry from ${name} (${service || 'General'})`,
@@ -259,7 +259,7 @@ app.post('/api/contact', async (req, res) => {
               'content-type': 'application/json'
             },
             body: JSON.stringify({
-              sender: { name: 'Studio.Dev Portfolio', email: 'gvenkateswaran3@gmail.com' },
+              sender: { name: 'y2solutions Portfolio', email: 'gvenkateswaran3@gmail.com' },
               to: [{ email: email, name: name }],
               subject: `We received your inquiry, ${name}! 🎉`,
               htmlContent: `
@@ -275,7 +275,7 @@ app.post('/api/contact', async (req, res) => {
                   <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 24px;">
                     ${message.replace(/\n/g, '<br>')}
                   </div>
-                  <p style="font-size: 15px; font-weight: bold; color: #006c4b; margin: 0;">Venkateswaran G — Studio.Dev</p>
+                  <p style="font-size: 15px; font-weight: bold; color: #006c4b; margin: 0;">Venkateswaran G — y2solutions</p>
                   <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
                   <p style="font-size: 11px; color: #6c7a71; margin: 0;">This is an automated confirmation. Please do not reply to this email.</p>
                 </div>
@@ -322,7 +322,7 @@ app.get('/api/contact', (req, res) => {
 
 if (require.main === module) {
   const server = app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Studio.Dev Backend running on http://0.0.0.0:${PORT}`);
+    console.log(`🚀 y2solutions Backend running on http://0.0.0.0:${PORT}`);
     console.log(`- Gmail SMTP Enabled: ${!!cleanEmailPass}`);
     console.log(`- Brevo API Enabled: ${!!process.env.BREVO_API_KEY}`);
   });
@@ -332,7 +332,7 @@ if (require.main === module) {
       const ALT_PORT = 5001;
       console.log(`[PORT BUSY] Port ${PORT} occupied, falling back to http://0.0.0.0:${ALT_PORT}`);
       app.listen(ALT_PORT, '0.0.0.0', () => {
-        console.log(`🚀 Studio.Dev Backend running on http://0.0.0.0:${ALT_PORT}`);
+        console.log(`🚀 y2solutions Backend running on http://0.0.0.0:${ALT_PORT}`);
         console.log(`- Gmail SMTP Enabled: ${!!cleanEmailPass}`);
       });
     } else {

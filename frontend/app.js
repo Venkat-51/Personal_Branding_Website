@@ -1,5 +1,5 @@
 /**
- * Lumina Studio - Interactive Logic & Application Engine
+ * y2solutions - Interactive Logic & Application Engine
  */
 
 function updateHeaderOffset() {
