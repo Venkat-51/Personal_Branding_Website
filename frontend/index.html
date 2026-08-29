@@ -18,6 +18,9 @@
   <!-- Tailwind CSS Framework Utility -->
   <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="public/y2solutions.png">
+
   <!-- Custom Design Tokens & System Styles -->
   <link rel="stylesheet" href="styles.css">
 
@@ -59,8 +62,9 @@
     <nav class="flex justify-between items-center max-w-[1200px] mx-auto px-4 sm:px-6 md:px-12 py-3.5"
       aria-label="Main Navigation">
       <a href="#home"
-        class="text-xl sm:text-2xl font-bold tracking-tight text-on-surface hover:text-primary transition-colors flex-shrink-0">
-        y2<span class="text-primary">solutions</span>
+        class="text-xl sm:text-2xl font-bold tracking-tight text-on-surface hover:text-primary transition-colors flex-shrink-0 flex items-center gap-2">
+        <img src="public/y2solutions.png" alt="y2solutions Logo" class="h-5 sm:h-6 w-auto object-contain">
+        <span>y2<span class="text-primary">solutions</span></span>
       </a>
 
       <!-- Desktop Nav Menu -->
@@ -586,8 +590,11 @@
   <footer class="bg-surface-container-highest border-t border-outline-variant/30 py-12 px-6 md:px-12">
     <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
       <div>
-        <a href="#home" class="text-xl font-bold tracking-tight text-on-surface">y2<span
-            class="text-primary">solutions</span></a>
+        <a href="#home"
+          class="text-xl font-bold tracking-tight text-on-surface hover:text-primary transition-colors flex items-center gap-2">
+          <img src="public/y2solutions.png" alt="y2solutions Logo" class="h-5 sm:h-6 w-auto object-contain">
+          <span>y2<span class="text-primary">solutions</span></span>
+        </a>
         <p class="text-xs text-on-surface-variant mt-1">© 2026 y2solutions. Built with precision & clarity.</p>
       </div>
 

@@ -50,6 +50,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Serve static assets from frontend folder
+app.use(express.static(path.join(__dirname, '../frontend')));
+
 // Clean App Password (strip any whitespace)
 const cleanEmailPass = (process.env.EMAIL_PASS || '').replace(/\s+/g, '');
 const cleanEmailUser = (process.env.EMAIL_USER || 'gvenkateswaran3@gmail.com').trim();
