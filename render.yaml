@@ -1,7 +1,7 @@
 services:
   # 1. Express Backend Service
   - type: web
-    name: y2solutions-backend
+    name: FreelanceWithVenkat-backend
     env: node
     buildCommand: cd backend && npm install
     startCommand: cd backend && node server.js
@@ -17,7 +17,7 @@ services:
 
   # 2. Static Frontend Service
   - type: web
-    name: y2solutions-frontend
+    name: FreelanceWithVenkat-frontend
     env: static
     buildCommand: ""
     staticPublishPath: ./frontend

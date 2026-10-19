@@ -1,11 +1,11 @@
-# y2solutions — Personal Branding Portfolio & Web App
+# FreelanceWithVenkat — Personal Branding Portfolio & Web App
 
 [![Node.js](https://img.shields.io/badge/Node.js-v18%2B-green.svg)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-4.19-blue.svg)](https://expressjs.com/)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.x-38bdf8.svg)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-A high-end personal branding website and digital portfolio for **Venkateswaran G (y2solutions)** — Junior Freelance Web Developer. Designed with precision, modern typography, glassmorphic UI components, and backed by a robust Node.js/Express service with automated dual email notification dispatching.
+A high-end personal branding website and digital portfolio for **Venkateswaran G (FreelanceWithVenkat)** — Junior Freelance Web Developer. Designed with precision, modern typography, glassmorphic UI components, and backed by a robust Node.js/Express service with automated dual email notification dispatching.
 
 ---
 
@@ -156,7 +156,7 @@ Use the included `render.yaml` file for continuous deployment on Render:
 
 **Venkateswaran G**  
 - **Email**: [gvenkateswaran3@gmail.com](mailto:gvenkateswaran3@gmail.com)  
-- **Brand**: y2solutions  
+- **Brand**: FreelanceWithVenkat  
 - **Role**: Junior Freelance Web Developer  
 
 ---

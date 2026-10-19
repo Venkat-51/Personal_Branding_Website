@@ -1,7 +1,7 @@
 {
-  "name": "y2solutions-backend",
+  "name": "FreelanceWithVenkat-backend",
   "version": "1.0.0",
-  "description": "Express Backend API for y2solutions Personal Branding Portfolio",
+  "description": "Express Backend API for FreelanceWithVenkat Personal Branding Portfolio",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

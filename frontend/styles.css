@@ -1,4 +1,4 @@
-/* y2solutions - Modern Minimalist Design System */
+/* FreelanceWithVenkat - Modern Minimalist Design System */
 
 :root {
   /* Surface & Background */
@@ -172,12 +172,23 @@ body {
 }
 
 /* Fluid Responsive Typography & Container Safeguards */
-h1, h2, h3, h4, h5, h6, p, span, a {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a {
   overflow-wrap: break-word;
   word-break: break-word;
 }
 
-img, video, iframe, svg {
+img,
+video,
+iframe,
+svg {
   max-width: 100%;
   height: auto;
 }
@@ -190,7 +201,8 @@ img, video, iframe, svg {
   border-radius: 0;
   padding: 12px 4px;
   width: 100%;
-  font-size: 1rem; /* 16px prevents iOS Safari forced viewport zoom on focus */
+  font-size: 1rem;
+  /* 16px prevents iOS Safari forced viewport zoom on focus */
   color: var(--color-on-surface);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -249,7 +261,9 @@ img, video, iframe, svg {
 
 /* Mobile & Touch Screen Optimizations (320px - 767px) */
 @media (max-width: 767px) {
-  button, .mobile-nav-link {
+
+  button,
+  .mobile-nav-link {
     touch-action: manipulation;
   }
 
