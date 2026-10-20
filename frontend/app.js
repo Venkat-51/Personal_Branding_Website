@@ -163,8 +163,7 @@ function initHeroTypewriter() {
     'custom websites',
     'business landing pages',
     'celebration sites',
-    'academic portfolios',
-    'e-commerce stores'
+    'academic portfolios'
   ];
 
   let phraseIdx = 0;
