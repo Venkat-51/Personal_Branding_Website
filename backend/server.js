@@ -28,7 +28,7 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || '')
   .map(o => o.trim())
   .filter(Boolean)
   .concat([
-    'https://personalbranding-seven.vercel.app',
+    'https://freelancewithvenkat.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000',
     'http://127.0.0.1:5173'
