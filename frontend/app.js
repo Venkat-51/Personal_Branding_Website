@@ -576,23 +576,54 @@ function initContactForm() {
   const form = document.getElementById('contact-form');
   const statusMsg = document.getElementById('form-status');
   const submitBtn = document.getElementById('submit-btn');
+  const phoneInput = document.getElementById('contact-phone');
+  const countryCodeSelect = document.getElementById('contact-country-code');
 
   if (!form) return;
+
+  // Enforce numbers-only and 10-digit limit on phone input
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function() {
+      // Strip any non-digit character and cap at 10 digits
+      this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
+
+    phoneInput.addEventListener('keypress', function(e) {
+      // Disallow non-numeric keys except controls
+      if (e.key && !/^\d$/.test(e.key)) {
+        e.preventDefault();
+      }
+    });
+
+    phoneInput.addEventListener('paste', function(e) {
+      e.preventDefault();
+      const pasteText = (e.clipboardData || window.clipboardData).getData('text') || '';
+      const cleanDigits = pasteText.replace(/\D/g, '').slice(0, 10);
+      this.value = cleanDigits;
+    });
+  }
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const name = document.getElementById('contact-name').value.trim();
     const email = document.getElementById('contact-email').value.trim();
-    const phoneInput = document.getElementById('contact-phone');
-    const phone = phoneInput ? phoneInput.value.trim() : '';
+    const countryCode = countryCodeSelect ? countryCodeSelect.value : '+91';
+    const rawPhoneDigits = phoneInput ? phoneInput.value.replace(/\D/g, '').trim() : '';
+    const phone = rawPhoneDigits ? `${countryCode} ${rawPhoneDigits}` : '';
     const serviceSelect = document.getElementById('contact-service');
     const serviceValue = serviceSelect ? serviceSelect.value : '';
     const serviceText = (serviceSelect && serviceValue) ? serviceSelect.options[serviceSelect.selectedIndex].text : '';
     const message = document.getElementById('contact-message').value.trim();
 
-    if (!name || !email || !serviceValue || !message) {
-      showStatus('Please fill in all required fields (Name, Email, Project Type, Project Details).', 'error');
+    if (!name || !email || !rawPhoneDigits || !serviceValue || !message) {
+      showStatus('Please fill in all required fields (Name, Email, Phone Number, Project Type, Project Details).', 'error');
+      return;
+    }
+
+    if (rawPhoneDigits.length !== 10) {
+      showStatus('Please enter a valid 10-digit phone number.', 'error');
+      if (phoneInput) phoneInput.focus();
       return;
     }
 
@@ -660,7 +691,7 @@ function initContactForm() {
 
   function triggerMailtoFallback(name, email, phone, serviceText, message, recipient) {
     const subject = encodeURIComponent(`Project Inquiry from ${name} (${serviceText})`);
-    const body = encodeURIComponent(`Hello Alex,\n\nName: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'N/A'}\nProject Type: ${serviceText}\n\nProject Details:\n${message}\n\nBest regards,\n${name}`);
+    const body = encodeURIComponent(`Hello Venkat,\n\nName: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'N/A'}\nProject Type: ${serviceText}\n\nProject Details:\n${message}\n\nBest regards,\n${name}`);
     window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
     showStatus(`✓ Thank you, ${name}! Your email draft for ${recipient} has been prepared.`, 'success');
     form.reset();

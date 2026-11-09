@@ -153,6 +153,11 @@ body {
   box-shadow: 0 2px 0 0 var(--color-primary);
 }
 
+select.minimal-input option {
+  background-color: var(--color-surface-lowest);
+  color: var(--color-on-surface);
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -211,6 +216,11 @@ svg {
   outline: none;
   border-bottom-color: var(--color-primary);
   box-shadow: 0 2px 0 0 var(--color-primary);
+}
+
+select.minimal-input option {
+  background-color: var(--color-surface-lowest);
+  color: var(--color-on-surface);
 }
 
 /* Modal Overlay Animation */

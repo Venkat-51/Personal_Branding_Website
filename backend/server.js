@@ -90,10 +90,19 @@ app.post('/api/contact', async (req, res) => {
   try {
     const { name, email, phone, service, message } = req.body;
 
-    if (!name || !email || !service || service === 'Choose a project type' || !message) {
+    if (!name || !email || !phone || !service || service === 'Choose a project type' || !message) {
       return res.status(400).json({
         success: false,
-        error: 'Name, email, project type, and message are required fields.'
+        error: 'Name, email, phone number, project type, and message are required fields.'
+      });
+    }
+
+    // Phone validation (must contain 10-digit number)
+    const rawPhoneDigits = String(phone).replace(/\D/g, '');
+    if (rawPhoneDigits.length < 10) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please enter a valid 10-digit phone number.'
       });
     }
 
