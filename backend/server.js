@@ -55,7 +55,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Clean App Password (strip any whitespace)
 const cleanEmailPass = (process.env.EMAIL_PASS || '').replace(/\s+/g, '');
-const cleanEmailUser = (process.env.EMAIL_USER || 'gvenkateswaran3@gmail.com').trim();
+const cleanEmailUser = (process.env.EMAIL_USER || 'freelancewithvenkat@gmail.com').trim();
 
 // Transporter setup (Nodemailer Gmail SMTP)
 const transporter = nodemailer.createTransport({
@@ -113,7 +113,7 @@ app.post('/api/contact', async (req, res) => {
       phone: phone || 'Not provided',
       service: service || 'General Inquiry',
       message,
-      recipient: 'gvenkateswaran3@gmail.com',
+      recipient: 'freelancewithvenkat@gmail.com',
       createdAt: new Date().toISOString()
     };
 
@@ -146,7 +146,7 @@ app.post('/api/contact', async (req, res) => {
         try {
           const mailInfo = await transporter.sendMail({
             from: `"FreelanceWithVenkat Portfolio" <${cleanEmailUser}>`,
-            to: 'gvenkateswaran3@gmail.com',
+            to: 'freelancewithvenkat@gmail.com',
             replyTo: email,
             subject: `New Project Inquiry from ${name} (${service || 'General'})`,
             text: `Name: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'Not provided'}\nProject Type: ${service || 'General'}\n\nProject Details:\n${message}`,
@@ -164,7 +164,7 @@ app.post('/api/contact', async (req, res) => {
                   ${message.replace(/\n/g, '<br>')}
                 </div>
                 <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
-                <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to gvenkateswaran3@gmail.com via Gmail SMTP</p>
+                <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to freelancewithvenkat@gmail.com via Gmail SMTP</p>
               </div>
             `
           });
@@ -222,8 +222,8 @@ app.post('/api/contact', async (req, res) => {
               'content-type': 'application/json'
             },
             body: JSON.stringify({
-              sender: { name: 'FreelanceWithVenkat Portfolio', email: 'gvenkateswaran3@gmail.com' },
-              to: [{ email: 'gvenkateswaran3@gmail.com', name: 'Venkateswaran' }],
+              sender: { name: 'FreelanceWithVenkat Portfolio', email: 'freelancewithvenkat@gmail.com' },
+              to: [{ email: 'freelancewithvenkat@gmail.com', name: 'Venkateswaran' }],
               replyTo: { email: email, name: name },
               subject: `New Project Inquiry from ${name} (${service || 'General'})`,
               htmlContent: `
@@ -262,7 +262,7 @@ app.post('/api/contact', async (req, res) => {
               'content-type': 'application/json'
             },
             body: JSON.stringify({
-              sender: { name: 'FreelanceWithVenkat Portfolio', email: 'gvenkateswaran3@gmail.com' },
+              sender: { name: 'FreelanceWithVenkat Portfolio', email: 'freelancewithvenkat@gmail.com' },
               to: [{ email: email, name: name }],
               subject: `We received your inquiry, ${name}! 🎉`,
               htmlContent: `

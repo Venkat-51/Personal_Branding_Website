@@ -102,7 +102,7 @@ Personal BRANDING/
    ```env
    PORT=5000
    CORS_ORIGIN=http://localhost:5173,http://localhost:3000
-   EMAIL_USER=gvenkateswaran3@gmail.com
+   EMAIL_USER=freelancewithvenkat@gmail.com
    EMAIL_PASS=your_gmail_app_password
    BREVO_API_KEY=your_brevo_api_key_optional
    ```
@@ -155,7 +155,7 @@ Use the included `render.yaml` file for continuous deployment on Render:
 ## 📬 Contact & Support
 
 **Venkateswaran G**  
-- **Email**: [gvenkateswaran3@gmail.com](mailto:gvenkateswaran3@gmail.com)  
+- **Email**: [freelancewithvenkat@gmail.com](mailto:freelancewithvenkat@gmail.com)  
 - **Brand**: FreelanceWithVenkat  
 - **Role**: Junior Freelance Web Developer  
 
