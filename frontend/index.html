@@ -19,7 +19,7 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
 
   <!-- Favicon -->
-  <link rel="icon" type="image/png" href="public/FreelanceWithVenkat.png">
+  <link rel="icon" type="image/png" href="public/y2solutions.png">
 
   <!-- Custom Design Tokens & System Styles -->
   <link rel="stylesheet" href="styles.css">
@@ -417,7 +417,7 @@
       <div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
         <div class="md:col-span-5 relative order-2 md:order-1 reveal-on-scroll">
           <div class="relative rounded-2xl overflow-hidden soft-shadow-lg group">
-            <img src="public/Vk.png" alt="Venkat - Junior Web Developer"
+            <img src="public/freelancewithvenkat.png" alt="Venkat - Junior Web Developer"
               class="w-full h-auto aspect-[4/5] object-cover transition-transform duration-500 group-hover:scale-105">
             <div class="absolute inset-0 bg-gradient-to-t from-on-surface/40 via-transparent to-transparent opacity-60">
             </div>
@@ -551,8 +551,7 @@
                 <div class="flex items-center gap-3">
                   <div class="w-36 sm:w-44 flex-shrink-0">
                     <select id="contact-country-code" name="countryCode" required
-                      class="minimal-input bg-transparent cursor-pointer font-medium text-sm"
-                      aria-label="Country Code">
+                      class="minimal-input bg-transparent cursor-pointer font-medium text-sm" aria-label="Country Code">
                       <option value="+91" selected>🇮🇳 +91 (India)</option>
                       <option value="+1">🇺🇸 +1 (USA)</option>
                       <option value="+44">🇬🇧 +44 (UK)</option>
@@ -569,12 +568,8 @@
                     </select>
                   </div>
                   <div class="flex-1">
-                    <input type="tel" id="contact-phone" name="phone" required
-                      class="minimal-input"
-                      placeholder="Enter 10-digit number"
-                      maxlength="10"
-                      inputmode="numeric"
-                      pattern="[0-9]{10}"
+                    <input type="tel" id="contact-phone" name="phone" required class="minimal-input"
+                      placeholder="Enter 10-digit number" maxlength="10" inputmode="numeric" pattern="[0-9]{10}"
                       autocomplete="tel-national">
                   </div>
                 </div>
@@ -582,25 +577,108 @@
               </div>
 
               <div>
-                <label for="contact-service"
-                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">Project
-                  Type *</label>
-                <select id="contact-service" name="service" required
-                  class="minimal-input bg-transparent cursor-pointer">
-                  <option value="" disabled selected>Choose a project type</option>
-                  <option value="web-app">Custom Web Application</option>
-                  <option value="website">Website Design & Development</option>
-                  <option value="ecommerce">Small E-Commerce Platform</option>
-                  <option value="audit">Performance Audit & Optimization</option>
-                </select>
+                <label for="contact-business-name"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">Business
+                  Name
+                  *</label>
+                <input type="text" id="contact-business-name" name="businessName" required class="minimal-input"
+                  placeholder="e.g. Acme Innovations / Personal Brand">
               </div>
 
+              <!-- What type of your business? (Select + Custom Option) -->
               <div>
-                <label for="contact-message"
-                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">Project
-                  Details *</label>
-                <textarea id="contact-message" name="message" rows="4" required class="minimal-input resize-none"
-                  placeholder="Tell me about your project goals, timeline, and budget..."></textarea>
+                <label for="contact-business-type"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
+                  What type of your business? *
+                </label>
+                <select id="contact-business-type" name="businessType" required
+                  class="minimal-input bg-transparent cursor-pointer font-medium text-sm">
+                  <option value="" disabled selected>Select your business type</option>
+                  <option value="E-Commerce & Retail">E-Commerce & Retail</option>
+                  <option value="Technology & SaaS">Technology & SaaS / Startup</option>
+                  <option value="Healthcare & Wellness">Healthcare & Wellness</option>
+                  <option value="Real Estate & Construction">Real Estate & Construction</option>
+                  <option value="Education & Coaching">Education & Coaching</option>
+                  <option value="Restaurant & Hospitality">Restaurant & Hospitality</option>
+                  <option value="Finance & Professional Services">Finance & Professional Services</option>
+                  <option value="Manufacturing & Logistics">Manufacturing & Logistics</option>
+                  <option value="Creative Agency / Media">Creative Agency / Media</option>
+                  <option value="Personal Brand / Creator">Personal Brand / Creator</option>
+                  <option value="Other">Other (Custom Option...)</option>
+                </select>
+                <div id="custom-business-container" class="hidden mt-3">
+                  <input type="text" id="contact-custom-business" class="minimal-input"
+                    placeholder="Enter your custom business type...">
+                </div>
+              </div>
+
+              <!-- Expected Timeline (Select + Custom Option) -->
+              <div>
+                <label for="contact-timeline"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
+                  Expected Timeline *
+                </label>
+                <select id="contact-timeline" name="timeline" required
+                  class="minimal-input bg-transparent cursor-pointer font-medium text-sm">
+                  <option value="" disabled selected>Select expected timeline</option>
+                  <option value="Urgent (< 1-2 weeks)">Urgent (&lt; 1-2 weeks)</option>
+                  <option value="2 - 4 weeks">2 - 4 weeks</option>
+                  <option value="1 - 2 months">1 - 2 months</option>
+                  <option value="2 - 3 months">2 - 3 months</option>
+                  <option value="3+ months (Long-term)">3+ months (Long-term)</option>
+                  <option value="Flexible / Exploring">Flexible / Exploring</option>
+                  <option value="Custom">Custom Timeline (Enter below...)</option>
+                </select>
+                <div id="custom-timeline-container" class="hidden mt-3">
+                  <input type="text" id="contact-custom-timeline" class="minimal-input"
+                    placeholder="e.g. 5 weeks, or Need launch before specific date...">
+                </div>
+              </div>
+
+              <!-- Estimated Budget (Select + Custom Option) -->
+              <div>
+                <label for="contact-budget"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
+                  Estimated Budget *
+                </label>
+                <select id="contact-budget" name="budget" required
+                  class="minimal-input bg-transparent cursor-pointer font-medium text-sm">
+                  <option value="" disabled selected>Select Estimated Budget</option>
+                  <option value="< ₹25,000 / < $300">&lt; ₹25,000 / &lt; $300 (Landing Page / Starter)</option>
+                  <option value="₹25,000 - ₹50,000 / $300 - $600">₹25,000 - ₹50,000 / $300 - $600</option>
+                  <option value="₹50,000 - ₹1,00,000 / $600 - $1,200">₹50,000 - ₹1,00,000 / $600 - $1,200</option>
+                  <option value="₹1,00,000 - ₹2,50,000 / $1,200 - $3,000">₹1,00,000 - ₹2,50,000 / $1,200 - $3,000
+                  </option>
+                  <option value="₹2,50,000+ / $3,000+">₹2,50,000+ / $3,000+ (Full Scale / Custom Solution)</option>
+                  <option value="Custom">Custom Budget (Enter below...)</option>
+                </select>
+                <div id="custom-budget-container" class="hidden mt-3">
+                  <input type="text" id="contact-custom-budget" class="minimal-input"
+                    placeholder="e.g. ₹75,000 or $1,000...">
+                </div>
+              </div>
+
+              <!-- Requirements (Must Fill) -->
+              <div>
+                <label for="contact-requirements"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
+                  Requirements *
+                </label>
+                <textarea id="contact-requirements" name="requirements" rows="4" required
+                  class="minimal-input resize-none"
+                  placeholder="Describe your core requirements, target audience, key features, or deliverables..."></textarea>
+              </div>
+
+              <!-- Optional Notes / Text Box (Can be empty) -->
+              <div>
+                <label for="contact-notes"
+                  class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant mb-2">
+                  Additional Notes & Instructions <span
+                    class="text-on-surface-variant/60 font-normal lowercase">(optional - leave empty if not
+                    needed)</span>
+                </label>
+                <textarea id="contact-notes" name="additionalNotes" rows="2" class="minimal-input resize-none"
+                  placeholder="Any additional details, links, inspiration websites, or special notes..."></textarea>
               </div>
 
               <button type="submit" id="submit-btn"

@@ -579,23 +579,75 @@ function initContactForm() {
   const phoneInput = document.getElementById('contact-phone');
   const countryCodeSelect = document.getElementById('contact-country-code');
 
+  // New Question Elements
+  const businessTypeSelect = document.getElementById('contact-business-type');
+  const customBusinessContainer = document.getElementById('custom-business-container');
+  const customBusinessInput = document.getElementById('contact-custom-business');
+
+  const timelineSelect = document.getElementById('contact-timeline');
+  const customTimelineContainer = document.getElementById('custom-timeline-container');
+  const customTimelineInput = document.getElementById('contact-custom-timeline');
+
+  const budgetSelect = document.getElementById('contact-budget');
+  const customBudgetContainer = document.getElementById('custom-budget-container');
+  const customBudgetInput = document.getElementById('contact-custom-budget');
+
+  const requirementsInput = document.getElementById('contact-requirements');
+  const notesInput = document.getElementById('contact-notes');
+
   if (!form) return;
+
+  // Toggle custom input for 1. Business Type
+  if (businessTypeSelect && customBusinessContainer) {
+    businessTypeSelect.addEventListener('change', () => {
+      if (businessTypeSelect.value === 'Other') {
+        customBusinessContainer.classList.remove('hidden');
+        if (customBusinessInput) customBusinessInput.focus();
+      } else {
+        customBusinessContainer.classList.add('hidden');
+      }
+    });
+  }
+
+  // Toggle custom input for 2. Expected Timeline
+  if (timelineSelect && customTimelineContainer) {
+    timelineSelect.addEventListener('change', () => {
+      if (timelineSelect.value === 'Custom') {
+        customTimelineContainer.classList.remove('hidden');
+        if (customTimelineInput) customTimelineInput.focus();
+      } else {
+        customTimelineContainer.classList.add('hidden');
+      }
+    });
+  }
+
+  // Toggle custom input for 3. Estimated Budget
+  if (budgetSelect && customBudgetContainer) {
+    budgetSelect.addEventListener('change', () => {
+      if (budgetSelect.value === 'Custom') {
+        customBudgetContainer.classList.remove('hidden');
+        if (customBudgetInput) customBudgetInput.focus();
+      } else {
+        customBudgetContainer.classList.add('hidden');
+      }
+    });
+  }
 
   // Enforce numbers-only and 10-digit limit on phone input
   if (phoneInput) {
-    phoneInput.addEventListener('input', function() {
+    phoneInput.addEventListener('input', function () {
       // Strip any non-digit character and cap at 10 digits
       this.value = this.value.replace(/\D/g, '').slice(0, 10);
     });
 
-    phoneInput.addEventListener('keypress', function(e) {
+    phoneInput.addEventListener('keypress', function (e) {
       // Disallow non-numeric keys except controls
       if (e.key && !/^\d$/.test(e.key)) {
         e.preventDefault();
       }
     });
 
-    phoneInput.addEventListener('paste', function(e) {
+    phoneInput.addEventListener('paste', function (e) {
       e.preventDefault();
       const pasteText = (e.clipboardData || window.clipboardData).getData('text') || '';
       const cleanDigits = pasteText.replace(/\D/g, '').slice(0, 10);
@@ -611,19 +663,57 @@ function initContactForm() {
     const countryCode = countryCodeSelect ? countryCodeSelect.value : '+91';
     const rawPhoneDigits = phoneInput ? phoneInput.value.replace(/\D/g, '').trim() : '';
     const phone = rawPhoneDigits ? `${countryCode} ${rawPhoneDigits}` : '';
-    const serviceSelect = document.getElementById('contact-service');
-    const serviceValue = serviceSelect ? serviceSelect.value : '';
-    const serviceText = (serviceSelect && serviceValue) ? serviceSelect.options[serviceSelect.selectedIndex].text : '';
-    const message = document.getElementById('contact-message').value.trim();
+    const businessNameInput = document.getElementById('contact-business-name');
+    const businessName = businessNameInput ? businessNameInput.value.trim() : '';
 
-    if (!name || !email || !rawPhoneDigits || !serviceValue || !message) {
-      showStatus('Please fill in all required fields (Name, Email, Phone Number, Project Type, Project Details).', 'error');
+    // 1. Business Type
+    const businessTypeValue = businessTypeSelect ? businessTypeSelect.value : '';
+    const customBusinessValue = customBusinessInput ? customBusinessInput.value.trim() : '';
+    const finalBusinessType = (businessTypeValue === 'Other') ? customBusinessValue : businessTypeValue;
+
+    // 2. Expected Timeline
+    const timelineValue = timelineSelect ? timelineSelect.value : '';
+    const customTimelineValue = customTimelineInput ? customTimelineInput.value.trim() : '';
+    const finalTimeline = (timelineValue === 'Custom') ? customTimelineValue : timelineValue;
+
+    // 3. Estimated Budget
+    const budgetValue = budgetSelect ? budgetSelect.value : '';
+    const customBudgetValue = customBudgetInput ? customBudgetInput.value.trim() : '';
+    const finalBudget = (budgetValue === 'Custom') ? customBudgetValue : budgetValue;
+
+    // 4. Requirements (Mandatory)
+    const requirements = requirementsInput ? requirementsInput.value.trim() : '';
+
+    // 5. Additional Notes (Optional - can be empty)
+    const additionalNotes = notesInput ? notesInput.value.trim() : '';
+
+    // Required Fields Validation
+    if (!name || !email || !rawPhoneDigits || !businessName || !businessTypeValue || !timelineValue || !budgetValue || !requirements) {
+      showStatus('Please fill in all required fields (Name, Email, Phone, Business Name, Business Type, Timeline, Budget, and Requirements).', 'error');
       return;
     }
 
     if (rawPhoneDigits.length !== 10) {
       showStatus('Please enter a valid 10-digit phone number.', 'error');
       if (phoneInput) phoneInput.focus();
+      return;
+    }
+
+    if (businessTypeValue === 'Other' && !finalBusinessType) {
+      showStatus('Please specify your custom business type.', 'error');
+      if (customBusinessInput) customBusinessInput.focus();
+      return;
+    }
+
+    if (timelineValue === 'Custom' && !finalTimeline) {
+      showStatus('Please enter your custom expected timeline.', 'error');
+      if (customTimelineInput) customTimelineInput.focus();
+      return;
+    }
+
+    if (budgetValue === 'Custom' && !finalBudget) {
+      showStatus('Please enter your custom Estimated Budget.', 'error');
+      if (customBudgetInput) customBudgetInput.focus();
       return;
     }
 
@@ -639,12 +729,20 @@ function initContactForm() {
       <span class="inline-block animate-spin mr-2">↻</span> Processing Inquiry...
     `;
 
+    const fullMessage = `Requirements:\n${requirements}` + (additionalNotes ? `\n\nAdditional Notes:\n${additionalNotes}` : '');
+
     const payload = {
       name,
       email,
       phone,
-      service: serviceText,
-      message
+      businessName,
+      service: finalBusinessType || 'Custom Project',
+      businessType: finalBusinessType,
+      timeline: finalTimeline,
+      budget: finalBudget,
+      requirements,
+      additionalNotes,
+      message: fullMessage
     };
 
     const recipient = 'freelancewithvenkat@gmail.com';
@@ -653,6 +751,14 @@ function initContactForm() {
     const host = window.location.hostname || 'localhost';
     const primaryUrl = isLocal ? `${window.location.protocol}//${host}:5000/api/contact` : '/api/contact';
     const fallbackUrl = isLocal ? `${window.location.protocol}//${host}:5001/api/contact` : 'https://personal-branding-website.onrender.com/api/contact';
+
+    // Reset helper
+    const resetAllFields = () => {
+      form.reset();
+      if (customBusinessContainer) customBusinessContainer.classList.add('hidden');
+      if (customTimelineContainer) customTimelineContainer.classList.add('hidden');
+      if (customBudgetContainer) customBudgetContainer.classList.add('hidden');
+    };
 
     // Try posting to Express Backend API (Port 5000 / 5001)
     const postToBackend = (url) => {
@@ -664,37 +770,51 @@ function initContactForm() {
     };
 
     postToBackend(primaryUrl)
-      .then(data => handleSuccessResponse(data, name, email, recipient, serviceText, message, phone))
+      .then(data => handleSuccessResponse(data, name, email, recipient, payload))
       .catch(() => {
         // Try fallback port 5001
         postToBackend(fallbackUrl)
-          .then(data => handleSuccessResponse(data, name, email, recipient, serviceText, message, phone))
+          .then(data => handleSuccessResponse(data, name, email, recipient, payload))
           .catch(() => {
             // Mailto fallback
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnText;
-            triggerMailtoFallback(name, email, phone, serviceText, message, recipient);
+            triggerMailtoFallback(payload, recipient);
+            resetAllFields();
           });
       });
 
-    function handleSuccessResponse(data, name, email, recipient, serviceText, message, phone) {
+    function handleSuccessResponse(data, name, email, recipient, payload) {
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalBtnText;
       if (data.success) {
         showStatus(`✓ Thank you for your message, ${name}! I will reach out to you within 24 hours.`, 'success');
-        form.reset();
+        resetAllFields();
       } else {
-        triggerMailtoFallback(name, email, phone, serviceText, message, recipient);
+        triggerMailtoFallback(payload, recipient);
+        resetAllFields();
       }
     }
   });
 
-  function triggerMailtoFallback(name, email, phone, serviceText, message, recipient) {
-    const subject = encodeURIComponent(`Project Inquiry from ${name} (${serviceText})`);
-    const body = encodeURIComponent(`Hello Venkat,\n\nName: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'N/A'}\nProject Type: ${serviceText}\n\nProject Details:\n${message}\n\nBest regards,\n${name}`);
+  function triggerMailtoFallback(p, recipient) {
+    const subject = encodeURIComponent(`Project Inquiry from ${p.name} (${p.businessName ? p.businessName + ' - ' : ''}${p.businessType || 'General'})`);
+    const bodyText =
+      `Hello Venkat,\n\n` +
+      `👤 Client Name: ${p.name}\n` +
+      `✉️ Email: ${p.email}\n` +
+      `📞 Phone: ${p.phone || 'N/A'}\n` +
+      `🏢 Business Name: ${p.businessName || 'N/A'}\n` +
+      `🏢 Business Type: ${p.businessType || 'N/A'}\n` +
+      `⏱️ Expected Timeline: ${p.timeline || 'N/A'}\n` +
+      `💰 Estimated Budget: ${p.budget || 'N/A'}\n\n` +
+      `📝 Requirements:\n${p.requirements}\n\n` +
+      (p.additionalNotes ? `📌 Additional Notes:\n${p.additionalNotes}\n\n` : '') +
+      `Best regards,\n${p.name}`;
+
+    const body = encodeURIComponent(bodyText);
     window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
-    showStatus(`✓ Thank you, ${name}! Your email draft for ${recipient} has been prepared.`, 'success');
-    form.reset();
+    showStatus(`✓ Thank you, ${p.name}! Your email draft for ${recipient} has been prepared.`, 'success');
   }
 
   function showStatus(message, type) {

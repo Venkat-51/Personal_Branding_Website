@@ -1,8 +1,9 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
-const path = require('path');
 const nodemailer = require('nodemailer');
 
 const app = express();
@@ -88,12 +89,26 @@ app.get('/api/health', (req, res) => {
 // POST /api/contact - Handle contact form submissions
 app.post('/api/contact', async (req, res) => {
   try {
-    const { name, email, phone, service, message } = req.body;
+    const {
+      name,
+      email,
+      phone,
+      businessName,
+      service,
+      businessType,
+      timeline,
+      budget,
+      requirements,
+      additionalNotes,
+      message
+    } = req.body;
 
-    if (!name || !email || !phone || !service || service === 'Choose a project type' || !message) {
+    const finalRequirements = requirements || message || '';
+
+    if (!name || !email || !phone || !finalRequirements) {
       return res.status(400).json({
         success: false,
-        error: 'Name, email, phone number, project type, and message are required fields.'
+        error: 'Name, email, phone number, and requirements are required fields.'
       });
     }
 
@@ -115,13 +130,21 @@ app.post('/api/contact', async (req, res) => {
       });
     }
 
+    const fullMessage = finalRequirements + (additionalNotes ? `\n\nAdditional Notes:\n${additionalNotes}` : '');
+
     const newSubmission = {
       id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
       name,
       email,
       phone: phone || 'Not provided',
-      service: service || 'General Inquiry',
-      message,
+      businessName: businessName || 'Not specified',
+      service: service || businessType || 'General Inquiry',
+      businessType: businessType || 'Not specified',
+      timeline: timeline || 'Not specified',
+      budget: budget || 'Not specified',
+      requirements: finalRequirements,
+      additionalNotes: additionalNotes || '',
+      message: fullMessage,
       recipient: 'freelancewithvenkat@gmail.com',
       createdAt: new Date().toISOString()
     };
@@ -137,7 +160,7 @@ app.post('/api/contact', async (req, res) => {
       console.warn('[STORAGE WARNING] Failed to save submission locally:', fsErr.message);
     }
 
-    console.log(`[CONTACT INQUIRY RECEIVED] From: ${name} <${email}> | Phone: ${phone || 'N/A'} | Service: ${service}`);
+    console.log(`[CONTACT INQUIRY RECEIVED] From: ${name} <${email}> | Phone: ${phone || 'N/A'} | Business: ${businessName || 'N/A'} (${businessType || 'N/A'})`);
 
     // Respond INSTANTLY to the user (under 200ms)
     res.status(201).json({
@@ -157,8 +180,8 @@ app.post('/api/contact', async (req, res) => {
             from: `"FreelanceWithVenkat Portfolio" <${cleanEmailUser}>`,
             to: 'freelancewithvenkat@gmail.com',
             replyTo: email,
-            subject: `New Project Inquiry from ${name} (${service || 'General'})`,
-            text: `Name: ${name}\nSender Email: ${email}\nPhone Number: ${phone || 'Not provided'}\nProject Type: ${service || 'General'}\n\nProject Details:\n${message}`,
+            subject: `New Project Inquiry from ${name} (${businessName ? businessName + ' - ' : ''}${businessType || 'General'})`,
+            text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\nBusiness Name: ${businessName || 'N/A'}\nBusiness Type: ${businessType || 'N/A'}\nExpected Timeline: ${timeline || 'N/A'}\nEstimated Budget: ${budget || 'N/A'}\n\nRequirements:\n${finalRequirements}\n\nAdditional Notes:\n${additionalNotes || 'None'}`,
             html: `
               <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd;">
                 <h2 style="color: #006c4b; margin-top: 0; font-size: 20px;">New Project Inquiry Received</h2>
@@ -166,12 +189,20 @@ app.post('/api/contact', async (req, res) => {
                   <p style="margin: 6px 0;"><strong>👤 Customer Name:</strong> ${name}</p>
                   <p style="margin: 6px 0;"><strong>✉️ Email Address:</strong> <a href="mailto:${email}" style="color: #006c4b;">${email}</a></p>
                   <p style="margin: 6px 0;"><strong>📞 Phone Number:</strong> <a href="tel:${phone}" style="color: #006c4b; font-weight: bold; text-decoration: none;">${phone || 'Not provided'}</a></p>
-                  <p style="margin: 6px 0;"><strong>💼 Project Type:</strong> ${service || 'General Inquiry'}</p>
+                  <p style="margin: 6px 0;"><strong>🏢 Business Name:</strong> ${businessName || 'Not specified'}</p>
+                  <p style="margin: 6px 0;"><strong>🏢 Business Type:</strong> ${businessType || 'Not specified'}</p>
+                  <p style="margin: 6px 0;"><strong>⏱️ Expected Timeline:</strong> ${timeline || 'Not specified'}</p>
+                  <p style="margin: 6px 0;"><strong>💰 Estimated Budget:</strong> ${budget || 'Not specified'}</p>
                 </div>
-                <p style="margin-bottom: 8px;"><strong>📝 Project Details:</strong></p>
-                <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42;">
-                  ${message.replace(/\n/g, '<br>')}
+                <p style="margin-bottom: 8px;"><strong>📝 Project Requirements:</strong></p>
+                <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 16px;">
+                  ${finalRequirements.replace(/\n/g, '<br>')}
                 </div>
+                ${additionalNotes ? `
+                <p style="margin-bottom: 8px;"><strong>📌 Additional Notes / Instructions:</strong></p>
+                <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #6c7a71; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42;">
+                  ${additionalNotes.replace(/\n/g, '<br>')}
+                </div>` : ''}
                 <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
                 <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to freelancewithvenkat@gmail.com via Gmail SMTP</p>
               </div>
@@ -189,19 +220,22 @@ app.post('/api/contact', async (req, res) => {
             from: `"FreelanceWithVenkat Portfolio" <${cleanEmailUser}>`,
             to: email,
             subject: `We received your inquiry, ${name}! 🎉`,
-            text: `Hi ${name},\n\nThank you for reaching out! I've received your inquiry about "${service || 'your project'}" and will get back to you within 24 hours.\n\nHere's a summary of what you submitted:\n- Project Type: ${service || 'General Inquiry'}\n- Phone: ${phone || 'Not provided'}\n\nYour Message:\n${message}\n\nLooking forward to working with you!\n\nBest regards,\nVenkateswaran G\nFreelanceWithVenkat`,
+            text: `Hi ${name},\n\nThank you for reaching out! I've received your inquiry and will get back to you within 24 hours.\n\nHere's a summary of what you submitted:\n- Business Name: ${businessName || 'N/A'}\n- Business Type: ${businessType || 'N/A'}\n- Timeline: ${timeline || 'N/A'}\n- Budget: ${budget || 'N/A'}\n- Phone: ${phone || 'Not provided'}\n\nRequirements:\n${finalRequirements}\n\nLooking forward to working with you!\n\nBest regards,\nVenkateswaran G\nFreelanceWithVenkat`,
             html: `
               <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd; max-width: 600px;">
                 <h2 style="color: #006c4b; margin-top: 0; font-size: 22px;">Thanks for reaching out, ${name}! 🎉</h2>
                 <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">I've received your inquiry and will get back to you <strong>within 24 hours</strong>.</p>
                 <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2eae3;">
                   <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: bold; color: #6c7a71; text-transform: uppercase; letter-spacing: 0.5px;">Your Submission Summary</p>
-                  <p style="margin: 6px 0;"><strong>💼 Project Type:</strong> ${service || 'General Inquiry'}</p>
+                  <p style="margin: 6px 0;"><strong>🏢 Business Name:</strong> ${businessName || 'Not specified'}</p>
+                  <p style="margin: 6px 0;"><strong>🏢 Business Type:</strong> ${businessType || 'Not specified'}</p>
+                  <p style="margin: 6px 0;"><strong>⏱️ Timeline:</strong> ${timeline || 'Not specified'}</p>
+                  <p style="margin: 6px 0;"><strong>💰 Budget:</strong> ${budget || 'Not specified'}</p>
                   <p style="margin: 6px 0;"><strong>📞 Phone:</strong> ${phone || 'Not provided'}</p>
                 </div>
-                <p style="margin-bottom: 8px; font-size: 14px;"><strong>📝 Your Message:</strong></p>
+                <p style="margin-bottom: 8px; font-size: 14px;"><strong>📝 Requirements:</strong></p>
                 <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 24px;">
-                  ${message.replace(/\n/g, '<br>')}
+                  ${finalRequirements.replace(/\n/g, '<br>')}
                 </div>
                 <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">Looking forward to working with you!</p>
                 <p style="font-size: 15px; color: #3c4a42; margin-bottom: 4px;">Best regards,</p>
@@ -234,18 +268,26 @@ app.post('/api/contact', async (req, res) => {
               sender: { name: 'FreelanceWithVenkat Portfolio', email: 'freelancewithvenkat@gmail.com' },
               to: [{ email: 'freelancewithvenkat@gmail.com', name: 'Venkateswaran' }],
               replyTo: { email: email, name: name },
-              subject: `New Project Inquiry from ${name} (${service || 'General'})`,
+              subject: `New Project Inquiry from ${name} (${businessName ? businessName + ' - ' : ''}${businessType || 'General'})`,
               htmlContent: `
                 <div style="font-family: Arial, sans-serif; padding: 20px; color: #161d19; background-color: #f4fbf4; border-radius: 8px;">
                   <h2 style="color: #006c4b; margin-top: 0;">New Project Inquiry</h2>
                   <p><strong>Sender Name:</strong> ${name}</p>
                   <p><strong>Sender Email:</strong> ${email}</p>
                   <p><strong>Sender Phone Number:</strong> ${phone || 'Not provided'}</p>
-                  <p><strong>Project Type:</strong> ${service || 'General Inquiry'}</p>
-                  <p><strong>Project Details:</strong></p>
+                  <p><strong>Business Name:</strong> ${businessName || 'Not specified'}</p>
+                  <p><strong>Business Type:</strong> ${businessType || 'Not specified'}</p>
+                  <p><strong>Expected Timeline:</strong> ${timeline || 'Not specified'}</p>
+                  <p><strong>Estimated Budget:</strong> ${budget || 'Not specified'}</p>
+                  <p><strong>Requirements:</strong></p>
                   <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #006c4b; border-radius: 4px; font-size: 14px; line-height: 1.6;">
-                    ${message.replace(/\n/g, '<br>')}
+                    ${finalRequirements.replace(/\n/g, '<br>')}
                   </div>
+                  ${additionalNotes ? `
+                  <p><strong>Additional Notes:</strong></p>
+                  <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #6c7a71; border-radius: 4px; font-size: 14px; line-height: 1.6;">
+                    ${additionalNotes.replace(/\n/g, '<br>')}
+                  </div>` : ''}
                 </div>
               `
             })
@@ -280,12 +322,15 @@ app.post('/api/contact', async (req, res) => {
                   <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">I've received your inquiry and will get back to you <strong>within 24 hours</strong>.</p>
                   <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2eae3;">
                     <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: bold; color: #6c7a71; text-transform: uppercase; letter-spacing: 0.5px;">Your Submission Summary</p>
-                    <p style="margin: 6px 0;"><strong>💼 Project Type:</strong> ${service || 'General Inquiry'}</p>
+                    <p style="margin: 6px 0;"><strong>🏢 Business Name:</strong> ${businessName || 'Not specified'}</p>
+                    <p style="margin: 6px 0;"><strong>🏢 Business Type:</strong> ${businessType || 'Not specified'}</p>
+                    <p style="margin: 6px 0;"><strong>⏱️ Timeline:</strong> ${timeline || 'Not specified'}</p>
+                    <p style="margin: 6px 0;"><strong>💰 Budget:</strong> ${budget || 'Not specified'}</p>
                     <p style="margin: 6px 0;"><strong>📞 Phone:</strong> ${phone || 'Not provided'}</p>
                   </div>
-                  <p style="margin-bottom: 8px; font-size: 14px;"><strong>📝 Your Message:</strong></p>
+                  <p style="margin-bottom: 8px; font-size: 14px;"><strong>📝 Requirements:</strong></p>
                   <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 24px;">
-                    ${message.replace(/\n/g, '<br>')}
+                    ${finalRequirements.replace(/\n/g, '<br>')}
                   </div>
                   <p style="font-size: 15px; font-weight: bold; color: #006c4b; margin: 0;">Venkateswaran G — FreelanceWithVenkat</p>
                   <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
