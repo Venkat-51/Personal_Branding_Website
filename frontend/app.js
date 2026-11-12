@@ -901,8 +901,8 @@ function initContactForm() {
     postToBackend(primaryUrl)
       .then(data => handleSuccessResponse(data, name, email, recipient, payload))
       .catch((primaryErr) => {
-        // If client validation error (400), don't fallback to mailto; display the exact message
-        if (primaryErr.status && primaryErr.status >= 400 && primaryErr.status < 500) {
+        // If client validation error (400 or 422), display the exact message
+        if (primaryErr.status === 400 || primaryErr.status === 422) {
           submitBtn.disabled = false;
           submitBtn.innerHTML = originalBtnText;
           showStatus(primaryErr.message || 'Please check your inputs and try again.', 'error');

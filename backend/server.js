@@ -141,7 +141,7 @@ const transporter = nodemailer.createTransport({
 });
 
 // GET /api/health - Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString(),
@@ -153,7 +153,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // POST /api/contact - Handle contact form submissions
-app.post('/api/contact', handleUpload, async (req, res) => {
+app.post(['/api/contact', '/contact'], handleUpload, async (req, res) => {
   try {
     const {
       name,
@@ -487,7 +487,7 @@ app.post('/api/contact', handleUpload, async (req, res) => {
 });
 
 // GET /api/contact - Admin endpoint to list all contact submissions
-app.get('/api/contact', (req, res) => {
+app.get(['/api/contact', '/contact'], (req, res) => {
   try {
     const data = fs.existsSync(SUBMISSIONS_FILE)
       ? JSON.parse(fs.readFileSync(SUBMISSIONS_FILE, 'utf-8'))
