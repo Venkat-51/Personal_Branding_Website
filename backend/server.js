@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
+const { saveInquiryToPostgres } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -30,20 +31,33 @@ const ALLOWED_ORIGINS = (process.env.CORS_ORIGIN || '')
   .filter(Boolean)
   .concat([
     'https://freelancewithvenkat.vercel.app',
-    'http://localhost:5173',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500',
     'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5173',
     'http://127.0.0.1:5173'
   ]);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (e.g. curl, Postman, server-to-server)
-    if (!origin) return callback(null, true);
-    if (ALLOWED_ORIGINS.includes(origin)) {
+    // Allow requests with no origin or 'null' (e.g. direct file:/// preview, curl, mobile)
+    if (!origin || origin === 'null') return callback(null, true);
+
+    // Allow any localhost / 127.0.0.1 / local network IP on any port
+    if (/^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)(:\d+)?$/.test(origin)) {
       return callback(null, true);
     }
-    console.warn(`[CORS BLOCKED] Origin not allowed: ${origin}`);
-    return callback(new Error(`CORS policy: origin ${origin} not allowed`), false);
+
+    // Allow configured origins or standard deployment domains
+    if (ALLOWED_ORIGINS.includes(origin) || origin.endsWith('.vercel.app') || origin.endsWith('.onrender.com')) {
+      return callback(null, true);
+    }
+
+    // Default to allow to prevent blocking client inquiries
+    return callback(null, true);
   },
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -82,7 +96,8 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     service: 'FreelanceWithVenkat Backend Service',
     gmailConfigured: !!cleanEmailPass,
-    brevoConfigured: !!process.env.BREVO_API_KEY
+    brevoConfigured: !!process.env.BREVO_API_KEY,
+    neonDatabaseConfigured: !!process.env.DATABASE_URL
   });
 });
 
@@ -158,6 +173,18 @@ app.post('/api/contact', async (req, res) => {
       fs.writeFileSync(SUBMISSIONS_FILE, JSON.stringify(currentData, null, 2));
     } catch (fsErr) {
       console.warn('[STORAGE WARNING] Failed to save submission locally:', fsErr.message);
+    }
+
+    // Save to Neon PostgreSQL if DATABASE_URL is configured
+    try {
+      const pgRow = await saveInquiryToPostgres(newSubmission);
+      if (pgRow) {
+        console.log(`🐘 [DATABASE SUCCESS] Inquiry #${pgRow.id} saved to Neon PostgreSQL!`);
+      } else {
+        console.warn('ℹ️ [DATABASE NOTICE] Neon pool not active, skipped DB insert.');
+      }
+    } catch (pgErr) {
+      console.error('❌ [NEON POSTGRES ERROR] Failed to save submission:', pgErr.message);
     }
 
     console.log(`[CONTACT INQUIRY RECEIVED] From: ${name} <${email}> | Phone: ${phone || 'N/A'} | Business: ${businessName || 'N/A'} (${businessType || 'N/A'})`);

@@ -747,10 +747,12 @@ function initContactForm() {
 
     const recipient = 'freelancewithvenkat@gmail.com';
 
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.') || window.location.hostname.startsWith('10.');
-    const host = window.location.hostname || 'localhost';
-    const primaryUrl = isLocal ? `${window.location.protocol}//${host}:5000/api/contact` : '/api/contact';
-    const fallbackUrl = isLocal ? `${window.location.protocol}//${host}:5001/api/contact` : 'https://personal-branding-website.onrender.com/api/contact';
+    const isFile = window.location.protocol === 'file:';
+    const isLocal = isFile || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname.startsWith('192.168.') || window.location.hostname.startsWith('10.');
+    const host = (!isFile && window.location.hostname) ? window.location.hostname : 'localhost';
+    const isSamePort = window.location.port === '5000' || (!isLocal && !isFile);
+    const primaryUrl = isSamePort ? '/api/contact' : `http://${host}:5000/api/contact`;
+    const fallbackUrl = isLocal ? `http://${host}:5001/api/contact` : 'https://personal-branding-website.onrender.com/api/contact';
 
     // Reset helper
     const resetAllFields = () => {
@@ -766,16 +768,24 @@ function initContactForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
-      }).then(res => res.json());
+      }).then(async (res) => {
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || `Server responded with HTTP ${res.status}`);
+        }
+        return data;
+      });
     };
 
     postToBackend(primaryUrl)
       .then(data => handleSuccessResponse(data, name, email, recipient, payload))
-      .catch(() => {
+      .catch((primaryErr) => {
+        console.warn('[CONTACT FORM] Primary endpoint failed:', primaryErr.message, 'Trying fallback...');
         // Try fallback port 5001
         postToBackend(fallbackUrl)
           .then(data => handleSuccessResponse(data, name, email, recipient, payload))
-          .catch(() => {
+          .catch((fallbackErr) => {
+            console.error('[CONTACT FORM] Both endpoints failed:', fallbackErr.message);
             // Mailto fallback
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnText;
