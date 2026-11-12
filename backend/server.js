@@ -5,17 +5,22 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
+const multer = require('multer');
 const { saveInquiryToPostgres } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const DATA_DIR = process.env.VERCEL ? '/tmp' : path.join(__dirname, 'data');
+const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
 const SUBMISSIONS_FILE = path.join(DATA_DIR, 'submissions.json');
 
 // Ensure data directory and submissions file exist safely
 try {
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+  if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
   }
   if (!fs.existsSync(SUBMISSIONS_FILE)) {
     fs.writeFileSync(SUBMISSIONS_FILE, JSON.stringify([], null, 2));
@@ -65,6 +70,52 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Multer configuration for file uploads (max 5 MB per file, up to 3 files)
+const ALLOWED_FILE_TYPES = /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|csv|png|jpg|jpeg|gif|svg|zip|rar|fig|ai|psd|eps)$/i;
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => cb(null, UPLOADS_DIR),
+    filename: (req, file, cb) => {
+      const uniquePrefix = Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+      cb(null, uniquePrefix + '_' + file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_'));
+    }
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB per file
+  fileFilter: (req, file, cb) => {
+    if (ALLOWED_FILE_TYPES.test(file.originalname)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`File format not supported for "${file.originalname}". Allowed formats: PDF, DOCX, DOC, XLSX, XLS, PPTX, Images, ZIP, Figma, AI, PSD.`));
+    }
+  }
+});
+
+// Middleware to gracefully handle multer errors and return JSON
+const handleUpload = (req, res, next) => {
+  upload.array('attachments', 3)(req, res, (err) => {
+    if (err) {
+      console.warn('[UPLOAD REJECTED]', err.message);
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return res.status(400).json({
+          success: false,
+          error: 'File size exceeds 5 MB limit. Please attach smaller files.'
+        });
+      }
+      if (err.code === 'LIMIT_FILE_COUNT' || err.code === 'LIMIT_UNEXPECTED_FILE') {
+        return res.status(400).json({
+          success: false,
+          error: 'Maximum 3 files allowed per inquiry.'
+        });
+      }
+      return res.status(400).json({
+        success: false,
+        error: err.message || 'File upload failed.'
+      });
+    }
+    next();
+  });
+};
+
 // Serve static assets from frontend folder
 app.use(express.static(path.join(__dirname, '../frontend')));
 
@@ -102,7 +153,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // POST /api/contact - Handle contact form submissions
-app.post('/api/contact', async (req, res) => {
+app.post('/api/contact', handleUpload, async (req, res) => {
   try {
     const {
       name,
@@ -145,6 +196,16 @@ app.post('/api/contact', async (req, res) => {
       });
     }
 
+    // Map uploaded files
+    const uploadedFiles = req.files || [];
+    const attachments = uploadedFiles.map(f => ({
+      filename: f.filename,
+      originalName: f.originalname,
+      size: f.size,
+      mimetype: f.mimetype,
+      path: f.path
+    }));
+
     const fullMessage = finalRequirements + (additionalNotes ? `\n\nAdditional Notes:\n${additionalNotes}` : '');
 
     const newSubmission = {
@@ -159,6 +220,7 @@ app.post('/api/contact', async (req, res) => {
       budget: budget || 'Not specified',
       requirements: finalRequirements,
       additionalNotes: additionalNotes || '',
+      attachments: attachments,
       message: fullMessage,
       recipient: 'freelancewithvenkat@gmail.com',
       createdAt: new Date().toISOString()
@@ -187,7 +249,7 @@ app.post('/api/contact', async (req, res) => {
       console.error('❌ [NEON POSTGRES ERROR] Failed to save submission:', pgErr.message);
     }
 
-    console.log(`[CONTACT INQUIRY RECEIVED] From: ${name} <${email}> | Phone: ${phone || 'N/A'} | Business: ${businessName || 'N/A'} (${businessType || 'N/A'})`);
+    console.log(`[CONTACT INQUIRY RECEIVED] From: ${name} <${email}> | Phone: ${phone || 'N/A'} | Business: ${businessName || 'N/A'} (${businessType || 'N/A'}) | Files: ${attachments.length}`);
 
     // Respond INSTANTLY to the user (under 200ms)
     res.status(201).json({
@@ -203,12 +265,18 @@ app.post('/api/contact', async (req, res) => {
       // 1. Primary: Gmail SMTP
       if (cleanEmailPass) {
         try {
+          const emailAttachments = uploadedFiles.map(f => ({
+            filename: f.originalname,
+            path: f.path
+          }));
+
           const mailInfo = await transporter.sendMail({
             from: `"FreelanceWithVenkat Portfolio" <${cleanEmailUser}>`,
             to: 'freelancewithvenkat@gmail.com',
             replyTo: email,
             subject: `New Project Inquiry from ${name} (${businessName ? businessName + ' - ' : ''}${businessType || 'General'})`,
-            text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\nBusiness Name: ${businessName || 'N/A'}\nBusiness Type: ${businessType || 'N/A'}\nExpected Timeline: ${timeline || 'N/A'}\nEstimated Budget: ${budget || 'N/A'}\n\nRequirements:\n${finalRequirements}\n\nAdditional Notes:\n${additionalNotes || 'None'}`,
+            text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\nBusiness Name: ${businessName || 'N/A'}\nBusiness Type: ${businessType || 'N/A'}\nExpected Timeline: ${timeline || 'N/A'}\nEstimated Budget: ${budget || 'N/A'}\n\nRequirements:\n${finalRequirements}\n\nAdditional Notes:\n${additionalNotes || 'None'}\n\nAttached Files (${attachments.length}):\n${attachments.map(a => `- ${a.originalName} (${(a.size / 1024).toFixed(1)} KB)`).join('\n') || 'None'}`,
+            attachments: emailAttachments,
             html: `
               <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd;">
                 <h2 style="color: #006c4b; margin-top: 0; font-size: 20px;">New Project Inquiry Received</h2>
@@ -220,6 +288,11 @@ app.post('/api/contact', async (req, res) => {
                   <p style="margin: 6px 0;"><strong>🏢 Business Type:</strong> ${businessType || 'Not specified'}</p>
                   <p style="margin: 6px 0;"><strong>⏱️ Expected Timeline:</strong> ${timeline || 'Not specified'}</p>
                   <p style="margin: 6px 0;"><strong>💰 Estimated Budget:</strong> ${budget || 'Not specified'}</p>
+                  ${attachments.length > 0 ? `
+                  <p style="margin: 6px 0;"><strong>📎 Attached Reference Files (${attachments.length}):</strong></p>
+                  <ul style="margin: 4px 0 6px 20px; padding: 0; color: #006c4b;">
+                    ${attachments.map(a => `<li><strong>${a.originalName}</strong> (${(a.size / 1024).toFixed(1)} KB)</li>`).join('')}
+                  </ul>` : ''}
                 </div>
                 <p style="margin-bottom: 8px;"><strong>📝 Project Requirements:</strong></p>
                 <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 16px;">
@@ -247,7 +320,7 @@ app.post('/api/contact', async (req, res) => {
             from: `"FreelanceWithVenkat Portfolio" <${cleanEmailUser}>`,
             to: email,
             subject: `We received your inquiry, ${name}! 🎉`,
-            text: `Hi ${name},\n\nThank you for reaching out! I've received your inquiry and will get back to you within 24 hours.\n\nHere's a summary of what you submitted:\n- Business Name: ${businessName || 'N/A'}\n- Business Type: ${businessType || 'N/A'}\n- Timeline: ${timeline || 'N/A'}\n- Budget: ${budget || 'N/A'}\n- Phone: ${phone || 'Not provided'}\n\nRequirements:\n${finalRequirements}\n\nLooking forward to working with you!\n\nBest regards,\nVenkateswaran G\nFreelanceWithVenkat`,
+            text: `Hi ${name},\n\nThank you for reaching out! I've received your inquiry and will get back to you within 24 hours.\n\nHere's a summary of what you submitted:\n- Business Name: ${businessName || 'N/A'}\n- Business Type: ${businessType || 'N/A'}\n- Timeline: ${timeline || 'N/A'}\n- Budget: ${budget || 'N/A'}\n- Phone: ${phone || 'Not provided'}\n- Attached Files: ${attachments.map(a => a.originalName).join(', ') || 'None'}\n\nRequirements:\n${finalRequirements}\n\nLooking forward to working with you!\n\nBest regards,\nVenkateswaran G\nFreelanceWithVenkat`,
             html: `
               <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd; max-width: 600px;">
                 <h2 style="color: #006c4b; margin-top: 0; font-size: 22px;">Thanks for reaching out, ${name}! 🎉</h2>
@@ -259,6 +332,8 @@ app.post('/api/contact', async (req, res) => {
                   <p style="margin: 6px 0;"><strong>⏱️ Timeline:</strong> ${timeline || 'Not specified'}</p>
                   <p style="margin: 6px 0;"><strong>💰 Budget:</strong> ${budget || 'Not specified'}</p>
                   <p style="margin: 6px 0;"><strong>📞 Phone:</strong> ${phone || 'Not provided'}</p>
+                  ${attachments.length > 0 ? `
+                  <p style="margin: 6px 0;"><strong>📎 Attached Files:</strong> ${attachments.map(a => a.originalName).join(', ')}</p>` : ''}
                 </div>
                 <p style="margin-bottom: 8px; font-size: 14px;"><strong>📝 Requirements:</strong></p>
                 <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 24px;">
@@ -283,6 +358,55 @@ app.post('/api/contact', async (req, res) => {
       const brevoApiKey = process.env.BREVO_API_KEY;
       if (!emailSent && brevoApiKey) {
         try {
+          const brevoAttachments = uploadedFiles.map(f => {
+            try {
+              return {
+                name: f.originalname,
+                content: fs.readFileSync(f.path).toString('base64')
+              };
+            } catch (readErr) {
+              console.warn('[BREVO ATTACHMENT READ ERROR]', readErr.message);
+              return null;
+            }
+          }).filter(Boolean);
+
+          const brevoPayload = {
+            sender: { name: 'FreelanceWithVenkat Portfolio', email: 'freelancewithvenkat@gmail.com' },
+            to: [{ email: 'freelancewithvenkat@gmail.com', name: 'Venkateswaran' }],
+            replyTo: { email: email, name: name },
+            subject: `New Project Inquiry from ${name} (${businessName ? businessName + ' - ' : ''}${businessType || 'General'})`,
+            htmlContent: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; color: #161d19; background-color: #f4fbf4; border-radius: 8px;">
+                <h2 style="color: #006c4b; margin-top: 0;">New Project Inquiry</h2>
+                <p><strong>Sender Name:</strong> ${name}</p>
+                <p><strong>Sender Email:</strong> ${email}</p>
+                <p><strong>Sender Phone Number:</strong> ${phone || 'Not provided'}</p>
+                <p><strong>Business Name:</strong> ${businessName || 'Not specified'}</p>
+                <p><strong>Business Type:</strong> ${businessType || 'Not specified'}</p>
+                <p><strong>Expected Timeline:</strong> ${timeline || 'Not specified'}</p>
+                <p><strong>Estimated Budget:</strong> ${budget || 'Not specified'}</p>
+                ${attachments.length > 0 ? `
+                <p><strong>Attached Files (${attachments.length}):</strong></p>
+                <ul>
+                  ${attachments.map(a => `<li>${a.originalName} (${(a.size / 1024).toFixed(1)} KB)</li>`).join('')}
+                </ul>` : ''}
+                <p><strong>Requirements:</strong></p>
+                <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #006c4b; border-radius: 4px; font-size: 14px; line-height: 1.6;">
+                  ${finalRequirements.replace(/\n/g, '<br>')}
+                </div>
+                ${additionalNotes ? `
+                <p><strong>Additional Notes:</strong></p>
+                <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #6c7a71; border-radius: 4px; font-size: 14px; line-height: 1.6;">
+                  ${additionalNotes.replace(/\n/g, '<br>')}
+                </div>` : ''}
+              </div>
+            `
+          };
+
+          if (brevoAttachments.length > 0) {
+            brevoPayload.attachment = brevoAttachments;
+          }
+
           // Owner notification via Brevo
           const brevoResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
             method: 'POST',
@@ -291,33 +415,7 @@ app.post('/api/contact', async (req, res) => {
               'accept': 'application/json',
               'content-type': 'application/json'
             },
-            body: JSON.stringify({
-              sender: { name: 'FreelanceWithVenkat Portfolio', email: 'freelancewithvenkat@gmail.com' },
-              to: [{ email: 'freelancewithvenkat@gmail.com', name: 'Venkateswaran' }],
-              replyTo: { email: email, name: name },
-              subject: `New Project Inquiry from ${name} (${businessName ? businessName + ' - ' : ''}${businessType || 'General'})`,
-              htmlContent: `
-                <div style="font-family: Arial, sans-serif; padding: 20px; color: #161d19; background-color: #f4fbf4; border-radius: 8px;">
-                  <h2 style="color: #006c4b; margin-top: 0;">New Project Inquiry</h2>
-                  <p><strong>Sender Name:</strong> ${name}</p>
-                  <p><strong>Sender Email:</strong> ${email}</p>
-                  <p><strong>Sender Phone Number:</strong> ${phone || 'Not provided'}</p>
-                  <p><strong>Business Name:</strong> ${businessName || 'Not specified'}</p>
-                  <p><strong>Business Type:</strong> ${businessType || 'Not specified'}</p>
-                  <p><strong>Expected Timeline:</strong> ${timeline || 'Not specified'}</p>
-                  <p><strong>Estimated Budget:</strong> ${budget || 'Not specified'}</p>
-                  <p><strong>Requirements:</strong></p>
-                  <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #006c4b; border-radius: 4px; font-size: 14px; line-height: 1.6;">
-                    ${finalRequirements.replace(/\n/g, '<br>')}
-                  </div>
-                  ${additionalNotes ? `
-                  <p><strong>Additional Notes:</strong></p>
-                  <div style="background-color: #ffffff; padding: 15px; border-left: 4px solid #6c7a71; border-radius: 4px; font-size: 14px; line-height: 1.6;">
-                    ${additionalNotes.replace(/\n/g, '<br>')}
-                  </div>` : ''}
-                </div>
-              `
-            })
+            body: JSON.stringify(brevoPayload)
           });
 
           const brevoResult = await brevoResponse.json();

@@ -595,7 +595,100 @@ function initContactForm() {
   const requirementsInput = document.getElementById('contact-requirements');
   const notesInput = document.getElementById('contact-notes');
 
+  // File Upload Elements
+  const fileInput = document.getElementById('contact-file');
+  const fileUploadZone = document.getElementById('file-upload-zone');
+  const filePreviewList = document.getElementById('file-preview-list');
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB per file
+  const MAX_FILES = 3;
+  const ALLOWED_EXTENSIONS = ['.pdf','.doc','.docx','.xls','.xlsx','.ppt','.pptx','.txt','.csv','.png','.jpg','.jpeg','.gif','.svg','.zip','.rar','.fig','.ai','.psd','.eps'];
+  let selectedFiles = [];
+
   if (!form) return;
+
+  // File Upload Logic
+  if (fileInput && fileUploadZone && filePreviewList) {
+    const updateFilePreview = () => {
+      if (selectedFiles.length === 0) {
+        filePreviewList.classList.add('hidden');
+        filePreviewList.innerHTML = '';
+        return;
+      }
+      filePreviewList.classList.remove('hidden');
+      filePreviewList.innerHTML = selectedFiles.map((file, idx) => {
+        const sizeKB = (file.size / 1024).toFixed(1);
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        const sizeStr = file.size >= 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+        const isOverSize = file.size > MAX_FILE_SIZE;
+        return `
+          <div class="flex items-center justify-between px-3 py-2 rounded-lg border ${isOverSize ? 'border-red-300 bg-red-50/50' : 'border-outline-variant/30 bg-surface-container-lowest'} text-sm">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="material-symbols-outlined text-base ${isOverSize ? 'text-red-500' : 'text-primary'}">description</span>
+              <span class="truncate text-on-surface font-medium max-w-[180px] sm:max-w-[280px]">${file.name}</span>
+              <span class="text-xs text-on-surface-variant/60 flex-shrink-0">(${sizeStr})</span>
+              ${isOverSize ? '<span class="text-xs text-red-600 font-semibold flex-shrink-0">Too large</span>' : ''}
+            </div>
+            <button type="button" data-remove-idx="${idx}" class="file-remove-btn p-1 text-on-surface-variant hover:text-red-600 transition-colors flex-shrink-0" aria-label="Remove file">
+              <span class="material-symbols-outlined text-lg">close</span>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      // Bind remove buttons
+      filePreviewList.querySelectorAll('.file-remove-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.removeIdx, 10);
+          selectedFiles.splice(idx, 1);
+          updateFilePreview();
+        });
+      });
+    };
+
+    const addFiles = (files) => {
+      for (const file of files) {
+        if (selectedFiles.length >= MAX_FILES) {
+          showStatus(`You can upload a maximum of ${MAX_FILES} files.`, 'error');
+          break;
+        }
+        const ext = '.' + file.name.split('.').pop().toLowerCase();
+        if (!ALLOWED_EXTENSIONS.includes(ext)) {
+          showStatus(`File "${file.name}" has an unsupported format. Allowed: PDF, DOCX, XLSX, PPTX, Images, ZIP, Figma, AI, PSD.`, 'error');
+          continue;
+        }
+        if (file.size > MAX_FILE_SIZE) {
+          showStatus(`File "${file.name}" exceeds the 5 MB limit (${(file.size / (1024 * 1024)).toFixed(1)} MB).`, 'error');
+          continue;
+        }
+        // Avoid duplicates
+        if (selectedFiles.some(f => f.name === file.name && f.size === file.size)) continue;
+        selectedFiles.push(file);
+      }
+      updateFilePreview();
+    };
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length) addFiles(Array.from(fileInput.files));
+      fileInput.value = ''; // Reset so same file can be re-selected
+    });
+
+    // Drag & drop
+    ['dragenter', 'dragover'].forEach(evt => {
+      fileUploadZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        fileUploadZone.classList.add('border-primary', 'bg-primary/10');
+      });
+    });
+    ['dragleave', 'drop'].forEach(evt => {
+      fileUploadZone.addEventListener(evt, (e) => {
+        e.preventDefault();
+        fileUploadZone.classList.remove('border-primary', 'bg-primary/10');
+      });
+    });
+    fileUploadZone.addEventListener('drop', (e) => {
+      if (e.dataTransfer.files.length) addFiles(Array.from(e.dataTransfer.files));
+    });
+  }
 
   // Toggle custom input for 1. Business Type
   if (businessTypeSelect && customBusinessContainer) {
@@ -745,6 +838,26 @@ function initContactForm() {
       message: fullMessage
     };
 
+    // Build request data (Use FormData if files attached, otherwise clean JSON)
+    const hasFiles = typeof selectedFiles !== 'undefined' && selectedFiles.length > 0;
+    let requestBody;
+    let requestHeaders = {};
+
+    if (hasFiles) {
+      const formData = new FormData();
+      Object.keys(payload).forEach(key => {
+        if (payload[key] !== undefined && payload[key] !== null) {
+          formData.append(key, payload[key]);
+        }
+      });
+      selectedFiles.forEach(file => formData.append('attachments', file));
+      requestBody = formData;
+      // Note: Browser automatically sets Content-Type to multipart/form-data with boundary
+    } else {
+      requestBody = JSON.stringify(payload);
+      requestHeaders['Content-Type'] = 'application/json';
+    }
+
     const recipient = 'freelancewithvenkat@gmail.com';
 
     const isFile = window.location.protocol === 'file:';
@@ -760,18 +873,26 @@ function initContactForm() {
       if (customBusinessContainer) customBusinessContainer.classList.add('hidden');
       if (customTimelineContainer) customTimelineContainer.classList.add('hidden');
       if (customBudgetContainer) customBudgetContainer.classList.add('hidden');
+      // Clear uploaded files
+      if (typeof selectedFiles !== 'undefined') selectedFiles.length = 0;
+      if (filePreviewList) { filePreviewList.classList.add('hidden'); filePreviewList.innerHTML = ''; }
     };
 
     // Try posting to Express Backend API (Port 5000 / 5001)
     const postToBackend = (url) => {
-      return fetch(url, {
+      const fetchOpts = {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(async (res) => {
+        body: requestBody
+      };
+      if (Object.keys(requestHeaders).length > 0) {
+        fetchOpts.headers = requestHeaders;
+      }
+      return fetch(url, fetchOpts).then(async (res) => {
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-          throw new Error(data.error || `Server responded with HTTP ${res.status}`);
+          const err = new Error(data.error || `Server responded with HTTP ${res.status}`);
+          err.status = res.status;
+          throw err;
         }
         return data;
       });
@@ -780,8 +901,16 @@ function initContactForm() {
     postToBackend(primaryUrl)
       .then(data => handleSuccessResponse(data, name, email, recipient, payload))
       .catch((primaryErr) => {
+        // If client validation error (400), don't fallback to mailto; display the exact message
+        if (primaryErr.status && primaryErr.status >= 400 && primaryErr.status < 500) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalBtnText;
+          showStatus(primaryErr.message || 'Please check your inputs and try again.', 'error');
+          return;
+        }
+
         console.warn('[CONTACT FORM] Primary endpoint failed:', primaryErr.message, 'Trying fallback...');
-        // Try fallback port 5001
+        // Try fallback port 5001 or cloud API
         postToBackend(fallbackUrl)
           .then(data => handleSuccessResponse(data, name, email, recipient, payload))
           .catch((fallbackErr) => {

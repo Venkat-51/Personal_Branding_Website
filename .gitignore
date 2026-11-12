@@ -19,6 +19,7 @@ build/
 
 # Private Client Submission Data
 backend/data/*.json
+backend/data/uploads/
 !backend/data/.gitkeep
 
 # System & Editor Metadata
