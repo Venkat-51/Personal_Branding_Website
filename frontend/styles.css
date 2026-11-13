@@ -1,5 +1,203 @@
 /* FreelanceWithVenkat - Modern Minimalist Design System */
 
+/* =====================================================
+   PAGE PRELOADER
+   ===================================================== */
+#page-preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+#page-preloader.preloader-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.preloader-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+  animation: preloaderFadeUp 0.5s ease forwards;
+}
+
+.preloader-logo img {
+  height: 1.25rem;
+  width: auto;
+}
+
+.preloader-logo span.accent {
+  color: var(--color-primary);
+}
+
+/* Dot-bounce spinner */
+.preloader-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.preloader-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+
+.preloader-dots span:nth-child(1) { animation-delay: 0s; }
+.preloader-dots span:nth-child(2) { animation-delay: 0.2s; }
+.preloader-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40%            { transform: scale(1.0); opacity: 1;   }
+}
+
+@keyframes preloaderFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* =====================================================
+   SHIMMER SKELETON (image cards while loading)
+   ===================================================== */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-container) 25%,
+    var(--color-surface-high) 50%,
+    var(--color-surface-container) 75%
+  );
+  background-size: 1200px 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Applied to card image wrappers until image loads */
+.card-img-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-img-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-container) 25%,
+    var(--color-surface-high) 50%,
+    var(--color-surface-container) 75%
+  );
+  background-size: 1200px 100%;
+  animation: shimmer 1.6s linear infinite;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.card-img-wrapper.img-loaded::before {
+  opacity: 0;
+}
+
+/* =====================================================
+   SUBMIT BUTTON LOADING STATE
+   ===================================================== */
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.btn-loading .btn-label { opacity: 0; }
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: btnSpin 0.75s linear infinite;
+}
+
+@keyframes btnSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* =====================================================
+   STAGGERED REVEAL DELAYS (sections)
+   ===================================================== */
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+
+/* =====================================================
+   HERO CONTENT ENTRANCE ANIMATION
+   ===================================================== */
+@keyframes heroFadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+.hero-animate {
+  opacity: 0;
+  animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hero-animate:nth-child(1) { animation-delay: 0.15s; }
+.hero-animate:nth-child(2) { animation-delay: 0.28s; }
+.hero-animate:nth-child(3) { animation-delay: 0.42s; }
+.hero-animate:nth-child(4) { animation-delay: 0.55s; }
+.hero-animate:nth-child(5) { animation-delay: 0.68s; }
+
+/* =====================================================
+   NAV SLIDE-DOWN ENTRANCE
+   ===================================================== */
+@keyframes navSlideDown {
+  from { opacity: 0; transform: translateY(-100%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+header {
+  animation: navSlideDown 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+/* =====================================================
+   WHATSAPP BUTTON BOUNCE-IN
+   ===================================================== */
+@keyframes waBounceIn {
+  0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+  60%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
+  80%  { transform: scale(0.95) rotate(-2deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.wa-bounce-in {
+  animation: waBounceIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) 1.2s both;
+}
+
+
 :root {
   /* Surface & Background */
   --color-surface: #f4fbf4;
@@ -374,4 +572,86 @@ select.minimal-input option {
   :root {
     --container-max: 1320px;
   }
+}
+
+/* =====================================================
+   FORM SUBMISSION LOADING ANIMATIONS
+   ===================================================== */
+.btn-submitting {
+  position: relative !important;
+  pointer-events: none !important;
+  opacity: 0.92 !important;
+  cursor: wait !important;
+  box-shadow: 0 0 0 3px rgba(0, 108, 75, 0.22), 0 10px 25px -5px rgba(0, 108, 75, 0.35) !important;
+  transform: translateY(1px);
+}
+
+.btn-submitting::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  background-size: 200% 100%;
+  animation: btnShimmer 1.8s infinite;
+}
+
+@keyframes btnShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.form-loading-container {
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.form-loading-bar {
+  height: 4px;
+  width: 100%;
+  background: rgba(0, 108, 75, 0.12);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.form-loading-bar-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 45%;
+  background: linear-gradient(90deg, #006c4b 0%, #34d399 50%, #006c4b 100%);
+  border-radius: 9999px;
+  animation: formProgressIndeterminate 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes formProgressIndeterminate {
+  0% {
+    left: -45%;
+    width: 30%;
+  }
+  50% {
+    left: 30%;
+    width: 60%;
+  }
+  100% {
+    left: 100%;
+    width: 30%;
+  }
+}
+
+.loading-dots span {
+  display: inline-block;
+  animation: dotBlink 1.4s infinite;
+  opacity: 0.2;
+}
+
+.loading-dots span:nth-child(1) { animation-delay: 0s; }
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBlink {
+  0%, 100% { opacity: 0.2; transform: translateY(0); }
+  50%      { opacity: 1; transform: translateY(-1.5px); }
 }

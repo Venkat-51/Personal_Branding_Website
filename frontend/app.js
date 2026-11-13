@@ -2,6 +2,17 @@
  * FreelanceWithVenkat - Interactive Logic & Application Engine
  */
 
+function hidePreloader() {
+  const preloader = document.getElementById('page-preloader');
+  if (preloader && !preloader.classList.contains('preloader-hidden')) {
+    preloader.classList.add('preloader-hidden');
+    setTimeout(() => {
+      preloader.style.display = 'none';
+      preloader.setAttribute('aria-hidden', 'true');
+    }, 550);
+  }
+}
+
 function updateHeaderOffset() {
   const topNav = document.querySelector('header');
   if (topNav) {
@@ -12,8 +23,17 @@ function updateHeaderOffset() {
   }
 }
 
-window.addEventListener('load', updateHeaderOffset);
+// Fade out preloader when all assets are loaded
+window.addEventListener('load', () => {
+  updateHeaderOffset();
+  setTimeout(hidePreloader, 150);
+});
+
+// Resizing adjusts offset
 window.addEventListener('resize', updateHeaderOffset);
+
+// Failsafe: Ensure preloader NEVER gets stuck even if assets or network lag
+setTimeout(hidePreloader, 1200);
 
 document.addEventListener('DOMContentLoaded', () => {
   updateHeaderOffset();
@@ -815,12 +835,36 @@ function initContactForm() {
       return;
     }
 
-    // UI Loading State
-    const originalBtnText = submitBtn.innerHTML;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `
-      <span class="inline-block animate-spin mr-2">↻</span> Processing Inquiry...
-    `;
+    // UI Loading State Elements & Helpers
+    const formLoading = document.getElementById('form-loading');
+    const formLoadingText = document.getElementById('form-loading-text');
+    const originalBtnText = '<span class="btn-label">Send Message</span>';
+
+    const startLoadingState = (btnLabel, statusText) => {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('btn-submitting');
+      submitBtn.innerHTML = `
+        <svg class="animate-spin -ml-1 mr-2.5 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-95" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>${btnLabel}</span>
+        <span class="loading-dots ml-1"><span>.</span><span>.</span><span>.</span></span>
+      `;
+      if (formLoading) {
+        if (formLoadingText && statusText) formLoadingText.textContent = statusText;
+        formLoading.classList.remove('hidden');
+      }
+    };
+
+    const stopLoadingState = () => {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('btn-submitting');
+      submitBtn.innerHTML = originalBtnText;
+      if (formLoading) {
+        formLoading.classList.add('hidden');
+      }
+    };
 
     const fullMessage = `Requirements:\n${requirements}` + (additionalNotes ? `\n\nAdditional Notes:\n${additionalNotes}` : '');
 
@@ -842,6 +886,13 @@ function initContactForm() {
     const hasFiles = typeof selectedFiles !== 'undefined' && selectedFiles.length > 0;
     let requestBody;
     let requestHeaders = {};
+
+    // Start sleek loading animation with dynamic text
+    const btnLabel = hasFiles ? 'Uploading & Sending' : 'Sending Message';
+    const statusLabel = hasFiles
+      ? `Uploading ${selectedFiles.length} attachment(s) & delivering inquiry...`
+      : 'Connecting & sending your inquiry to Venkat...';
+    startLoadingState(btnLabel, statusLabel);
 
     if (hasFiles) {
       const formData = new FormData();
@@ -903,8 +954,7 @@ function initContactForm() {
       .catch((primaryErr) => {
         // If client validation error (400 or 422), display the exact message
         if (primaryErr.status === 400 || primaryErr.status === 422) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = originalBtnText;
+          stopLoadingState();
           showStatus(primaryErr.message || 'Please check your inputs and try again.', 'error');
           return;
         }
@@ -916,16 +966,14 @@ function initContactForm() {
           .catch((fallbackErr) => {
             console.error('[CONTACT FORM] Both endpoints failed:', fallbackErr.message);
             // Mailto fallback
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
+            stopLoadingState();
             triggerMailtoFallback(payload, recipient);
             resetAllFields();
           });
       });
 
     function handleSuccessResponse(data, name, email, recipient, payload) {
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = originalBtnText;
+      stopLoadingState();
       if (data.success) {
         showStatus(`✓ Thank you for your message, ${name}! I will reach out to you within 24 hours.`, 'success');
         resetAllFields();

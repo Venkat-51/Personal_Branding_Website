@@ -57,6 +57,30 @@
 
 <body class="font-sans bg-surface text-on-surface antialiased relative">
 
+  <!-- ===================== PAGE PRELOADER ===================== -->
+  <div id="page-preloader" role="status" aria-label="Loading">
+    <div class="preloader-logo">
+      <img src="public/y2solutions.png" alt="FreelanceWithVenkat Logo">
+      <span>FreelanceWith<span class="accent">Venkat</span></span>
+    </div>
+    <div class="preloader-dots" aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+  <script>
+    (function () {
+      function dismiss() {
+        var p = document.getElementById('page-preloader');
+        if (p && !p.classList.contains('preloader-hidden')) {
+          p.classList.add('preloader-hidden');
+          setTimeout(function () { p.style.display = 'none'; }, 600);
+        }
+      }
+      window.addEventListener('load', function () { setTimeout(dismiss, 120); });
+      setTimeout(dismiss, 1200);
+    })();
+  </script>
+
   <!-- Sticky Blurred Navigation Header -->
   <header class="fixed top-0 w-full z-50 glass-nav transition-all duration-300">
     <nav class="flex justify-between items-center max-w-[1200px] mx-auto px-4 sm:px-6 md:px-12 py-3.5"
@@ -128,26 +152,26 @@
       <div class="max-w-[980px] mx-auto text-center relative z-10 my-auto">
         <!-- Live Status Badge -->
         <div
-          class="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container/80 backdrop-blur-md text-primary text-xs font-semibold uppercase tracking-wider mb-6 border border-primary/20 shadow-sm">
+          class="hero-animate hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container/80 backdrop-blur-md text-primary text-xs font-semibold uppercase tracking-wider mb-6 border border-primary/20 shadow-sm">
           <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse"></span> Available for New Projects • Premium
         </div>
 
         <!-- Dynamic Typing Headline -->
         <h1
-          class="hero-title text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-on-surface mb-6 leading-tight break-words">
+          class="hero-animate hero-title text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-on-surface mb-6 leading-tight break-words">
           I build <span id="hero-typed-text"
             class="text-primary underline decoration-primary-container decoration-4 underline-offset-8">custom
             websites</span><br class="hidden sm:inline"> for growing brands & personal moments.
         </h1>
 
         <p
-          class="hero-desc text-lg md:text-xl text-on-surface-variant mb-8 max-w-2xl mx-auto font-normal leading-relaxed">
+          class="hero-animate hero-desc text-lg md:text-xl text-on-surface-variant mb-8 max-w-2xl mx-auto font-normal leading-relaxed">
           Hi, I'm Venkateswaran. Full-stack web developer turning your vision into fast, modern, and high-converting
           websites.
         </p>
 
         <!-- Call to Action Buttons -->
-        <div class="hero-cta-group flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div class="hero-animate hero-cta-group flex flex-col sm:flex-row items-center justify-center gap-4">
           <a href="#work"
             class="hero-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-primary text-white hover:text-white px-8 py-3.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-on-primary-container hover:scale-105 soft-shadow">
             View My Work <span class="material-symbols-outlined text-sm">arrow_downward</span>
@@ -156,7 +180,7 @@
 
         <!-- Live Interactive Performance Highlights -->
         <div
-          class="hero-stats-grid mt-12 pt-8 border-t border-outline-variant/20 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          class="hero-animate hero-stats-grid mt-12 pt-8 border-t border-outline-variant/20 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
           <div
             class="hero-stat-card p-3.5 rounded-xl bg-surface-container-lowest/80 border border-outline-variant/20 soft-shadow hover:border-primary/40 transition-all hover:-translate-y-1">
             <p class="hero-stat-number text-2xl font-extrabold text-primary">100%</p>
@@ -275,9 +299,9 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           <!-- Project 1: SuperMarketApp -->
           <article
-            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll"
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll reveal-delay-1"
             data-card-key="supermarket">
-            <div class="aspect-video w-full overflow-hidden relative group/card">
+            <div class="card-img-wrapper aspect-video w-full overflow-hidden relative group/card">
               <img id="card-img-supermarket" src="public/Supermarket img/5.png" alt="SuperMarketApp Grocery Platform"
                 class="w-full h-full object-cover transition-all duration-500">
 
@@ -320,9 +344,9 @@
 
           <!-- Project 2: Flower Shop -->
           <article
-            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll"
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll reveal-delay-2"
             data-card-key="flowershop">
-            <div class="aspect-video w-full overflow-hidden relative group/card">
+            <div class="card-img-wrapper aspect-video w-full overflow-hidden relative group/card">
               <img id="card-img-flowershop" src="public/FlowerShop/1.png" alt="Flower Shop Thanjavur Platform"
                 class="w-full h-full object-cover transition-all duration-500">
 
@@ -364,9 +388,9 @@
 
           <!-- Project 3: E_Commerce Lead Management Platform -->
           <article
-            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll"
+            class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll reveal-delay-3"
             data-card-key="sellerrocket">
-            <div class="aspect-video w-full overflow-hidden relative group/card">
+            <div class="card-img-wrapper aspect-video w-full overflow-hidden relative group/card">
               <img id="card-img-sellerrocket" src="public/Seller Rocket/1.png" alt="Seller Rocket Platform"
                 class="w-full h-full object-cover transition-all duration-500">
 
@@ -710,8 +734,38 @@
 
               <button type="submit" id="submit-btn"
                 class="w-full inline-flex items-center justify-center bg-primary text-white hover:text-white px-8 py-4 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-200 hover:bg-on-primary-container hover:shadow-lg">
-                Send Message
+                <span class="btn-label">Send Message</span>
               </button>
+
+              <!-- Submission Loading Indicator -->
+              <div id="form-loading" class="hidden mt-4 form-loading-container" role="status" aria-live="polite">
+                <div class="form-loading-bar">
+                  <div class="form-loading-bar-inner"></div>
+                </div>
+                <div class="flex items-center justify-center gap-2 mt-2.5 text-xs font-medium text-primary">
+                  <span class="relative flex h-2 w-2">
+                    <span
+                      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </span>
+                  <span id="form-loading-text">Sending your inquiry to Venkat...</span>
+                </div>
+              </div>
+
+              <!-- Submission Loading Indicator -->
+              <div id="form-loading" class="hidden mt-4 form-loading-container" role="status" aria-live="polite">
+                <div class="form-loading-bar">
+                  <div class="form-loading-bar-inner"></div>
+                </div>
+                <div class="flex items-center justify-center gap-2 mt-2.5 text-xs font-medium text-primary">
+                  <span class="relative flex h-2 w-2">
+                    <span
+                      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </span>
+                  <span id="form-loading-text">Sending your inquiry to Venkat...</span>
+                </div>
+              </div>
 
               <div id="form-status" class="hidden mt-6"></div>
             </form>
@@ -840,7 +894,7 @@
 
   <!-- Floating WhatsApp Quick-Contact Button -->
   <a href="https://wa.me/918300027488" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"
-    class="fixed bottom-6 right-6 z-40 bg-[#25D366] hover:bg-[#20ba5a] text-white p-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center group"
+    class="wa-bounce-in fixed bottom-6 right-6 z-40 bg-[#25D366] hover:bg-[#20ba5a] text-white p-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center group"
     title="Chat on WhatsApp (+91 8300027488)">
     <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="currentColor">
       <path
