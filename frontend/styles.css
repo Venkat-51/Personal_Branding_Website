@@ -57,65 +57,172 @@
   animation: dotBounce 1.2s ease-in-out infinite;
 }
 
-.preloader-dots span:nth-child(1) { animation-delay: 0s; }
-.preloader-dots span:nth-child(2) { animation-delay: 0.2s; }
-.preloader-dots span:nth-child(3) { animation-delay: 0.4s; }
+.preloader-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.preloader-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.preloader-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
 
 @keyframes dotBounce {
-  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-  40%            { transform: scale(1.0); opacity: 1;   }
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+
+  40% {
+    transform: scale(1.0);
+    opacity: 1;
+  }
 }
 
 @keyframes preloaderFadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0);    }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* =====================================================
    SHIMMER SKELETON (image cards while loading)
    ===================================================== */
 @keyframes shimmer {
-  0%   { background-position: -600px 0; }
-  100% { background-position:  600px 0; }
+  0% {
+    background-position: -600px 0;
+  }
+
+  100% {
+    background-position: 600px 0;
+  }
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--color-surface-container) 25%,
-    var(--color-surface-high) 50%,
-    var(--color-surface-container) 75%
-  );
+  background: linear-gradient(90deg,
+      var(--color-surface-container) 25%,
+      var(--color-surface-high) 50%,
+      var(--color-surface-container) 75%);
   background-size: 1200px 100%;
   animation: shimmer 1.6s linear infinite;
 }
 
-/* Applied to card image wrappers until image loads */
+/* =====================================================
+   IMAGE SKELETON SHIMMER & LOADING ANIMATION
+   ===================================================== */
 .card-img-wrapper {
   position: relative;
   overflow: hidden;
+  background-color: var(--color-surface-container);
 }
 
+/* Shimmer placeholder under the image */
 .card-img-wrapper::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 1;
   border-radius: inherit;
-  background: linear-gradient(
-    90deg,
-    var(--color-surface-container) 25%,
-    var(--color-surface-high) 50%,
-    var(--color-surface-container) 75%
-  );
-  background-size: 1200px 100%;
-  animation: shimmer 1.6s linear infinite;
-  transition: opacity 0.4s ease;
+  background: linear-gradient(90deg,
+      var(--color-surface-container) 0%,
+      var(--color-surface-high) 50%,
+      var(--color-surface-container) 100%);
+  background-size: 200% 100%;
+  animation: imgSkeletonShimmer 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
   pointer-events: none;
 }
 
+@keyframes imgSkeletonShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Spinner indicator in the center while image loads */
+.card-img-wrapper .img-loader-spinner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.card-img-wrapper .img-loader-spinner-circle {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(0, 108, 75, 0.18);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spinnerRotate 0.75s linear infinite;
+}
+
+@keyframes spinnerRotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* The actual image */
+.card-img-wrapper img {
+  position: relative;
+  z-index: 3;
+  opacity: 0;
+  transform: scale(1.02);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+/* State when image has finished loading */
+.card-img-wrapper.is-loaded img,
+.card-img-wrapper.img-loaded img {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.card-img-wrapper.is-loaded::before,
 .card-img-wrapper.img-loaded::before {
   opacity: 0;
+  visibility: hidden;
+}
+
+.card-img-wrapper.is-loaded .img-loader-spinner,
+.card-img-wrapper.img-loaded .img-loader-spinner {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* State during image switching / re-loading */
+.card-img-wrapper.is-loading img {
+  opacity: 0.25;
+  transform: scale(1.02);
+}
+
+.card-img-wrapper.is-loading::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+.card-img-wrapper.is-loading .img-loader-spinner {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* =====================================================
@@ -127,7 +234,9 @@
   opacity: 0.85;
 }
 
-.btn-loading .btn-label { opacity: 0; }
+.btn-loading .btn-label {
+  opacity: 0;
+}
 
 .btn-loading::after {
   content: '';
@@ -141,23 +250,43 @@
 }
 
 @keyframes btnSpin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* =====================================================
    STAGGERED REVEAL DELAYS (sections)
    ===================================================== */
-.reveal-delay-1 { transition-delay: 0.08s; }
-.reveal-delay-2 { transition-delay: 0.16s; }
-.reveal-delay-3 { transition-delay: 0.24s; }
-.reveal-delay-4 { transition-delay: 0.32s; }
+.reveal-delay-1 {
+  transition-delay: 0.08s;
+}
+
+.reveal-delay-2 {
+  transition-delay: 0.16s;
+}
+
+.reveal-delay-3 {
+  transition-delay: 0.24s;
+}
+
+.reveal-delay-4 {
+  transition-delay: 0.32s;
+}
 
 /* =====================================================
    HERO CONTENT ENTRANCE ANIMATION
    ===================================================== */
 @keyframes heroFadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: translateY(0);    }
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .hero-animate {
@@ -165,18 +294,39 @@
   animation: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.hero-animate:nth-child(1) { animation-delay: 0.15s; }
-.hero-animate:nth-child(2) { animation-delay: 0.28s; }
-.hero-animate:nth-child(3) { animation-delay: 0.42s; }
-.hero-animate:nth-child(4) { animation-delay: 0.55s; }
-.hero-animate:nth-child(5) { animation-delay: 0.68s; }
+.hero-animate:nth-child(1) {
+  animation-delay: 0.15s;
+}
+
+.hero-animate:nth-child(2) {
+  animation-delay: 0.28s;
+}
+
+.hero-animate:nth-child(3) {
+  animation-delay: 0.42s;
+}
+
+.hero-animate:nth-child(4) {
+  animation-delay: 0.55s;
+}
+
+.hero-animate:nth-child(5) {
+  animation-delay: 0.68s;
+}
 
 /* =====================================================
    NAV SLIDE-DOWN ENTRANCE
    ===================================================== */
 @keyframes navSlideDown {
-  from { opacity: 0; transform: translateY(-100%); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 header {
@@ -187,10 +337,24 @@ header {
    WHATSAPP BUTTON BOUNCE-IN
    ===================================================== */
 @keyframes waBounceIn {
-  0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
-  60%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
-  80%  { transform: scale(0.95) rotate(-2deg); }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  0% {
+    transform: scale(0) rotate(-15deg);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.15) rotate(5deg);
+    opacity: 1;
+  }
+
+  80% {
+    transform: scale(0.95) rotate(-2deg);
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
 }
 
 .wa-bounce-in {
@@ -597,8 +761,13 @@ select.minimal-input option {
 }
 
 @keyframes btnShimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .form-loading-container {
@@ -631,10 +800,12 @@ select.minimal-input option {
     left: -45%;
     width: 30%;
   }
+
   50% {
     left: 30%;
     width: 60%;
   }
+
   100% {
     left: 100%;
     width: 30%;
@@ -647,11 +818,130 @@ select.minimal-input option {
   opacity: 0.2;
 }
 
-.loading-dots span:nth-child(1) { animation-delay: 0s; }
-.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
-.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+.loading-dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
 
 @keyframes dotBlink {
-  0%, 100% { opacity: 0.2; transform: translateY(0); }
-  50%      { opacity: 1; transform: translateY(-1.5px); }
+
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-1.5px);
+  }
+}
+
+/* =====================================================
+   FOOTER SOCIAL MEDIA ICONS & CHANNEL BUTTONS
+   ===================================================== */
+.footer-social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, background 0.25s ease, filter 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.footer-social-btn:hover {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+}
+
+.footer-social-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Instagram Official Multi-tone Sunset Gradient */
+.footer-social-instagram {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  color: #ffffff;
+}
+
+.footer-social-instagram:hover {
+  filter: brightness(1.08);
+}
+
+/* Facebook Official Blue */
+.footer-social-facebook {
+  background: #1877F2;
+  color: #ffffff;
+}
+
+.footer-social-facebook:hover {
+  background: #0d65d9;
+}
+
+/* WhatsApp Channel Official Green */
+.footer-social-whatsapp-channel {
+  background: #25D366;
+  color: #ffffff;
+}
+
+.footer-social-whatsapp-channel:hover {
+  background: #20ba5a;
+}
+
+/* =====================================================
+   FOOTER SOCIAL MEDIA ICONS & CHANNEL BUTTONS
+   ===================================================== */
+.footer-social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, background 0.25s ease, filter 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.footer-social-btn:hover {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+}
+
+.footer-social-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Instagram Official Multi-tone Sunset Gradient */
+.footer-social-instagram {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  color: #ffffff;
+}
+
+.footer-social-instagram:hover {
+  filter: brightness(1.08);
+}
+
+/* Facebook Official Blue */
+.footer-social-facebook {
+  background: #1877F2;
+  color: #ffffff;
+}
+
+.footer-social-facebook:hover {
+  background: #0d65d9;
+}
+
+/* WhatsApp Channel Official Green */
+.footer-social-whatsapp-channel {
+  background: #25D366;
+  color: #ffffff;
+}
+
+.footer-social-whatsapp-channel:hover {
+  background: #20ba5a;
 }

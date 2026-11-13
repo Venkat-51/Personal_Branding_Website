@@ -68,6 +68,19 @@
     </div>
   </div>
   <script>
+      (function () {
+        function dismiss() {
+          var p = document.getElementById('page-preloader');
+          if (p && !p.classList.contains('preloader-hidden')) {
+            p.classList.add('preloader-hidden');
+            setTimeout(function () { p.style.display = 'none'; }, 600);
+          }
+        }
+        window.addEventListener('load', function () { setTimeout(dismiss, 120); });
+        setTimeout(dismiss, 1200);
+      })();
+  </script>
+  <script>
     (function () {
       function dismiss() {
         var p = document.getElementById('page-preloader');
@@ -301,7 +314,11 @@
           <article
             class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll reveal-delay-1"
             data-card-key="supermarket">
-            <div class="card-img-wrapper aspect-video w-full overflow-hidden relative group/card">
+            <div class="card-img-wrapper aspect-video w-full overflow-hidden relative group/card"
+              id="wrapper-supermarket">
+              <div class="img-loader-spinner" aria-hidden="true">
+                <div class="img-loader-spinner-circle"></div>
+              </div>
               <img id="card-img-supermarket" src="public/Supermarket img/5.png" alt="SuperMarketApp Grocery Platform"
                 class="w-full h-full object-cover transition-all duration-500">
 
@@ -346,7 +363,11 @@
           <article
             class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll reveal-delay-2"
             data-card-key="flowershop">
-            <div class="card-img-wrapper aspect-video w-full overflow-hidden relative group/card">
+            <div class="card-img-wrapper aspect-video w-full overflow-hidden relative group/card"
+              id="wrapper-flowershop">
+              <div class="img-loader-spinner" aria-hidden="true">
+                <div class="img-loader-spinner-circle"></div>
+              </div>
               <img id="card-img-flowershop" src="public/FlowerShop/1.png" alt="Flower Shop Thanjavur Platform"
                 class="w-full h-full object-cover transition-all duration-500">
 
@@ -390,7 +411,11 @@
           <article
             class="bg-surface-container-lowest rounded-2xl soft-shadow hover-lift overflow-hidden border border-outline-variant/20 flex flex-col reveal-on-scroll reveal-delay-3"
             data-card-key="sellerrocket">
-            <div class="card-img-wrapper aspect-video w-full overflow-hidden relative group/card">
+            <div class="card-img-wrapper aspect-video w-full overflow-hidden relative group/card"
+              id="wrapper-sellerrocket">
+              <div class="img-loader-spinner" aria-hidden="true">
+                <div class="img-loader-spinner-circle"></div>
+              </div>
               <img id="card-img-sellerrocket" src="public/Seller Rocket/1.png" alt="Seller Rocket Platform"
                 class="w-full h-full object-cover transition-all duration-500">
 
@@ -752,21 +777,6 @@
                 </div>
               </div>
 
-              <!-- Submission Loading Indicator -->
-              <div id="form-loading" class="hidden mt-4 form-loading-container" role="status" aria-live="polite">
-                <div class="form-loading-bar">
-                  <div class="form-loading-bar-inner"></div>
-                </div>
-                <div class="flex items-center justify-center gap-2 mt-2.5 text-xs font-medium text-primary">
-                  <span class="relative flex h-2 w-2">
-                    <span
-                      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                  </span>
-                  <span id="form-loading-text">Sending your inquiry to Venkat...</span>
-                </div>
-              </div>
-
               <div id="form-status" class="hidden mt-6"></div>
             </form>
           </div>
@@ -788,31 +798,38 @@
         <p class="text-xs text-on-surface-variant mt-1">© 2026 FreelanceWithVenkat. Built with precision & clarity.</p>
       </div>
 
-      <div class="flex items-center gap-4">
-        <a href="https://www.instagram.com/freelancewithvenkat/" target="_blank" rel="noopener" aria-label="Instagram"
-          class="w-9 h-9 flex items-center justify-center rounded-full border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary transition-all duration-200 hover:scale-110">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <div class="flex items-center gap-3 sm:gap-4 flex-wrap justify-center sm:justify-end md:mr-14 lg:mr-0">
+        <!-- Instagram -->
+        <a href="https://www.instagram.com/freelancewithvenkat/" target="_blank" rel="noopener"
+          aria-label="Instagram (@freelancewithvenkat)" title="Follow on Instagram (@freelancewithvenkat)"
+          class="footer-social-btn footer-social-instagram w-10 h-10 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
             <circle cx="12" cy="12" r="4" />
             <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
           </svg>
         </a>
+
+        <!-- Facebook -->
         <a href="https://www.facebook.com/profile.php?id=61596359940729" target="_blank" rel="noopener"
-          aria-label="Facebook"
-          class="w-9 h-9 flex items-center justify-center rounded-full border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary transition-all duration-200 hover:scale-110">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+          aria-label="Facebook Profile" title="Follow on Facebook"
+          class="footer-social-btn footer-social-facebook w-10 h-10 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
           </svg>
         </a>
+
+        <!-- WhatsApp Channel -->
         <a href="https://whatsapp.com/channel/0029Vb9OvaVIt5rw7Zvs2u1W" target="_blank" rel="noopener"
-          aria-label="WhatsApp"
-          class="w-9 h-9 flex items-center justify-center rounded-full border border-outline-variant/40 text-on-surface-variant hover:text-primary hover:border-primary transition-all duration-200 hover:scale-110">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          aria-label="Join WhatsApp Channel" title="Join our WhatsApp Channel for announcements & updates"
+          class="footer-social-btn footer-social-whatsapp-channel h-10 px-3.5 rounded-full flex items-center gap-2 group">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="flex-shrink-0">
             <path
               d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
           </svg>
+          <span class="text-xs font-semibold whitespace-nowrap">WhatsApp</span>
+          <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/25 text-white border border-white/20">Channel</span>
         </a>
       </div>
 
@@ -842,7 +859,11 @@
         <!-- Interactive Project Image Carousel -->
         <div class="relative group rounded-xl overflow-hidden bg-surface-container border border-outline-variant/20">
           <div
-            class="relative h-48 sm:h-64 md:h-80 w-full overflow-hidden flex items-center justify-center bg-black/10">
+            class="card-img-wrapper relative h-48 sm:h-64 md:h-80 w-full overflow-hidden flex items-center justify-center bg-black/10"
+            id="wrapper-modal-carousel">
+            <div class="img-loader-spinner" aria-hidden="true">
+              <div class="img-loader-spinner-circle"></div>
+            </div>
             <img id="carousel-main-image" src="" alt="Project Screenshot"
               class="w-full h-full object-cover transition-opacity duration-300">
 

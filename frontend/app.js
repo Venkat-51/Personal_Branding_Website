@@ -364,13 +364,36 @@ function updateCarouselDisplay(index, resetTimer = true) {
   const counter = document.getElementById('carousel-counter');
   const dotsContainer = document.getElementById('carousel-dots');
   const thumbsContainer = document.getElementById('carousel-thumbnails');
+  const modalWrapper = document.getElementById('wrapper-modal-carousel') || (mainImg ? mainImg.closest('.card-img-wrapper') : null);
+
+  const markModalLoaded = () => {
+    if (modalWrapper) {
+      modalWrapper.classList.remove('is-loading');
+      modalWrapper.classList.add('is-loaded', 'img-loaded');
+    }
+  };
+
+  const markModalLoading = () => {
+    if (modalWrapper) {
+      modalWrapper.classList.remove('is-loaded', 'img-loaded');
+      modalWrapper.classList.add('is-loading');
+    }
+  };
 
   if (mainImg) {
-    mainImg.style.opacity = '0.3';
-    setTimeout(() => {
-      mainImg.src = currentCarouselImages[currentCarouselIndex];
-      mainImg.style.opacity = '1';
-    }, 120);
+    const nextSrc = currentCarouselImages[currentCarouselIndex];
+    markModalLoading();
+
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      mainImg.src = nextSrc;
+      markModalLoaded();
+    };
+    tempImg.onerror = () => {
+      mainImg.src = nextSrc;
+      markModalLoaded();
+    };
+    tempImg.src = nextSrc;
   }
 
   if (counter) {
@@ -543,8 +566,32 @@ function initCardCarousels() {
     const badgeEl = document.getElementById(`badge-${key}`);
     const prevBtn = document.querySelector(`[data-card-prev="${key}"]`);
     const nextBtn = document.querySelector(`[data-card-next="${key}"]`);
+    const wrapper = document.getElementById(`wrapper-${key}`) || (imgEl ? imgEl.closest('.card-img-wrapper') : null);
 
     if (!imgEl || !data || !data.images || data.images.length === 0) return;
+
+    const markLoaded = () => {
+      if (wrapper) {
+        wrapper.classList.remove('is-loading');
+        wrapper.classList.add('is-loaded', 'img-loaded');
+      }
+    };
+
+    const markLoading = () => {
+      if (wrapper) {
+        wrapper.classList.remove('is-loaded', 'img-loaded');
+        wrapper.classList.add('is-loading');
+      }
+    };
+
+    // Check initial image loading state
+    if (imgEl.complete && imgEl.naturalWidth > 0) {
+      markLoaded();
+    } else {
+      markLoading();
+      imgEl.addEventListener('load', markLoaded, { once: true });
+      imgEl.addEventListener('error', markLoaded, { once: true });
+    }
 
     // Preload all project images for instant smooth transitions
     data.images.forEach(src => {
@@ -559,11 +606,19 @@ function initCardCarousels() {
       else if (index >= data.images.length) cardIndex = 0;
       else cardIndex = index;
 
-      imgEl.style.opacity = '0.4';
-      setTimeout(() => {
-        imgEl.src = data.images[cardIndex];
-        imgEl.style.opacity = '1';
-      }, 120);
+      const nextSrc = data.images[cardIndex];
+
+      markLoading();
+      const tempImg = new Image();
+      tempImg.onload = () => {
+        imgEl.src = nextSrc;
+        markLoaded();
+      };
+      tempImg.onerror = () => {
+        imgEl.src = nextSrc;
+        markLoaded();
+      };
+      tempImg.src = nextSrc;
 
       if (badgeEl) {
         badgeEl.textContent = `${cardIndex + 1} / ${data.images.length}`;
