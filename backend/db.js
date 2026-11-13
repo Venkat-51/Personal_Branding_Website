@@ -27,9 +27,11 @@ if (process.env.DATABASE_URL) {
       budget VARCHAR(100),
       requirements TEXT,
       additional_notes TEXT,
+      message TEXT,
       attachments TEXT,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
     );
+    ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS message TEXT;
     ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS attachments TEXT;
   `)
   .then(() => {
@@ -56,9 +58,10 @@ async function saveInquiryToPostgres(data) {
       budget,
       requirements,
       additional_notes,
+      message,
       attachments,
       created_at
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
     RETURNING *;
   `;
   const values = [
@@ -72,6 +75,7 @@ async function saveInquiryToPostgres(data) {
     data.budget || null,
     data.requirements || null,
     data.additionalNotes || null,
+    data.message || null,
     data.attachments ? JSON.stringify(data.attachments) : null,
     data.createdAt || new Date()
   ];
