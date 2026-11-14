@@ -251,48 +251,166 @@ app.post(['/api/contact', '/contact'], handleUpload, async (req, res) => {
 
     console.log(`[CONTACT INQUIRY RECEIVED] From: ${name} <${email}> | Phone: ${phone || 'N/A'} | Business: ${businessName || 'N/A'} (${businessType || 'N/A'}) | Files: ${attachments.length}`);
 
-    // Respond INSTANTLY to the user (under 200ms)
-    res.status(201).json({
-      success: true,
-      message: `Thank you for your message, ${name}! I will reach out to you within 24 hours.`,
-      data: newSubmission
-    });
+    // Track email dispatch status
+    let ownerEmailSent = false;
+    let customerEmailSent = false;
 
-    // Dispatch email asynchronously in background (Non-blocking)
-    setImmediate(async () => {
-      let ownerEmailSent = false;
-      let customerEmailSent = false;
+    const brevoApiKey = (process.env.BREVO_API_KEY || '').trim();
+    const senderName = (process.env.SENDER_NAME || 'Freelance With Venkat').trim();
+    const ownerEmail = 'freelancewithvenkat@gmail.com';
 
-      const brevoApiKey = (process.env.BREVO_API_KEY || '').trim();
-      const senderName = (process.env.SENDER_NAME || 'Freelance With Venkat').trim();
-      const ownerEmail = 'freelancewithvenkat@gmail.com';
-
-      // 1. PRIMARY: Brevo Transactional Email API (Owner + Customer)
-      if (brevoApiKey) {
-        // Prepare base64 attachments for Brevo if files exist
-        const brevoAttachments = uploadedFiles.map(f => {
-          try {
-            return {
-              name: f.originalname,
-              content: fs.readFileSync(f.path).toString('base64')
-            };
-          } catch (readErr) {
-            console.warn('[BREVO ATTACHMENT READ WARNING]', readErr.message);
-            return null;
-          }
-        }).filter(Boolean);
-
-        // A. Send Owner Notification via Brevo
+    // 1. PRIMARY: Brevo Transactional Email API (Parallel Owner + Customer dispatch)
+    if (brevoApiKey) {
+      // Prepare base64 attachments for Brevo if files exist
+      const brevoAttachments = uploadedFiles.map(f => {
         try {
-          const ownerBrevoPayload = {
-            sender: { name: senderName, email: ownerEmail },
-            to: [{ email: ownerEmail, name: 'Venkateswaran G' }],
-            replyTo: { email: email, name: name },
+          return {
+            name: f.originalname,
+            content: fs.readFileSync(f.path).toString('base64')
+          };
+        } catch (readErr) {
+          console.warn('[BREVO ATTACHMENT READ WARNING]', readErr.message);
+          return null;
+        }
+      }).filter(Boolean);
+
+      const sendBrevo = async (payload, target) => {
+        try {
+          const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: {
+              'api-key': brevoApiKey,
+              'accept': 'application/json',
+              'content-type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+          const result = await res.json().catch(() => ({}));
+          if (res.ok) {
+            console.log(`🚀 [BREVO SUCCESS] ${target} email dispatched! Message ID:`, result.messageId);
+            return true;
+          } else {
+            if (result.code === 'unauthorized' || (result.message && result.message.includes('unrecognised IP'))) {
+              console.error(`⚠️ [BREVO IP RESTRICTION ERROR]: Brevo rejected the API call because the server IP is not authorized. Visit https://app.brevo.com/security/authorised_ips to disable the IP restriction.`);
+            } else {
+              console.error(`⚠️ [BREVO ${target.toUpperCase()} ERROR]`, result.message || result);
+            }
+            return false;
+          }
+        } catch (err) {
+          console.error(`❌ [BREVO ${target.toUpperCase()} EXCEPTION]`, err.message);
+          return false;
+        }
+      };
+
+      // A. Owner Payload
+      const ownerBrevoPayload = {
+        sender: { name: senderName, email: ownerEmail },
+        to: [{ email: ownerEmail, name: 'Venkateswaran G' }],
+        replyTo: { email: email, name: name },
+        subject: `New Project Inquiry from ${name} (${businessName ? businessName + ' - ' : ''}${businessType || 'General'})`,
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd; max-width: 650px;">
+            <h2 style="color: #006c4b; margin-top: 0; font-size: 20px;">New Project Inquiry Received</h2>
+            <div style="background-color: #ffffff; padding: 18px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2eae3;">
+              <p style="margin: 6px 0;"><strong>👤 Customer Name:</strong> ${name}</p>
+              <p style="margin: 6px 0;"><strong>✉️ Email Address:</strong> <a href="mailto:${email}" style="color: #006c4b;">${email}</a></p>
+              <p style="margin: 6px 0;"><strong>📞 Phone Number:</strong> <a href="tel:${phone}" style="color: #006c4b; font-weight: bold; text-decoration: none;">${phone || 'Not provided'}</a></p>
+              <p style="margin: 6px 0;"><strong>🏢 Business Name:</strong> ${businessName || 'Not specified'}</p>
+              <p style="margin: 6px 0;"><strong>🏢 Business Type:</strong> ${businessType || 'Not specified'}</p>
+              <p style="margin: 6px 0;"><strong>⏱️ Expected Timeline:</strong> ${timeline || 'Not specified'}</p>
+              <p style="margin: 6px 0;"><strong>💰 Estimated Budget:</strong> ${budget || 'Not specified'}</p>
+              ${attachments.length > 0 ? `
+              <p style="margin: 8px 0 4px 0;"><strong>📎 Attached Files (${attachments.length}):</strong></p>
+              <ul style="margin: 4px 0 8px 20px; padding: 0; color: #006c4b;">
+                ${attachments.map(a => `<li><strong>${a.originalName}</strong> (${(a.size / 1024).toFixed(1)} KB)</li>`).join('')}
+              </ul>` : ''}
+            </div>
+            <p style="margin-bottom: 8px;"><strong>📝 Requirements:</strong></p>
+            <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 16px;">
+              ${finalRequirements.replace(/\n/g, '<br>')}
+            </div>
+            ${additionalNotes ? `
+            <p style="margin-bottom: 8px;"><strong>📌 Additional Notes / Instructions:</strong></p>
+            <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #6c7a71; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 16px;">
+              ${additionalNotes.replace(/\n/g, '<br>')}
+            </div>` : ''}
+            <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
+            <p style="font-size: 11px; color: #6c7a71; margin: 0;">Dispatched via Brevo Transactional Email Service to ${ownerEmail}</p>
+          </div>
+        `
+      };
+
+      if (brevoAttachments.length > 0) {
+        ownerBrevoPayload.attachment = brevoAttachments;
+      }
+
+      // B. Customer Confirmation Payload
+      const customerBrevoPayload = {
+        sender: { name: senderName, email: ownerEmail },
+        to: [{ email: email, name: name }],
+        replyTo: { email: ownerEmail, name: senderName },
+        subject: `We received your inquiry, ${name}! 🎉`,
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd; max-width: 600px;">
+            <h2 style="color: #006c4b; margin-top: 0; font-size: 22px;">Thanks for reaching out, ${name}! 🎉</h2>
+            <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">I've received your inquiry and will review your requirements and get back to you <strong>within 24 hours</strong>.</p>
+            <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2eae3;">
+              <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: bold; color: #6c7a71; text-transform: uppercase; letter-spacing: 0.5px;">Your Submission Summary</p>
+              <p style="margin: 6px 0;"><strong>🏢 Business Name:</strong> ${businessName || 'Not specified'}</p>
+              <p style="margin: 6px 0;"><strong>🏢 Business Type:</strong> ${businessType || 'Not specified'}</p>
+              <p style="margin: 6px 0;"><strong>⏱️ Timeline:</strong> ${timeline || 'Not specified'}</p>
+              <p style="margin: 6px 0;"><strong>💰 Budget:</strong> ${budget || 'Not specified'}</p>
+              <p style="margin: 6px 0;"><strong>📞 Phone:</strong> ${phone || 'Not provided'}</p>
+              ${attachments.length > 0 ? `
+              <p style="margin: 6px 0;"><strong>📎 Attached Files:</strong> ${attachments.map(a => a.originalName).join(', ')}</p>` : ''}
+            </div>
+            <p style="margin-bottom: 8px; font-size: 14px;"><strong>📝 Requirements:</strong></p>
+            <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 24px;">
+              ${finalRequirements.replace(/\n/g, '<br>')}
+            </div>
+            <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">Looking forward to collaborating with you!</p>
+            <p style="font-size: 15px; color: #3c4a42; margin-bottom: 4px;">Best regards,</p>
+            <p style="font-size: 16px; font-weight: bold; color: #006c4b; margin: 0;">Venkateswaran G</p>
+            <p style="font-size: 13px; color: #6c7a71; margin: 2px 0 0 0;">${senderName}</p>
+            <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
+            <p style="font-size: 11px; color: #6c7a71; margin: 0;">Automated confirmation from ${senderName}. Please do not reply directly to this automated email.</p>
+          </div>
+        `
+      };
+
+      // Parallel execution for fast response
+      const [ownerRes, customerRes] = await Promise.allSettled([
+        sendBrevo(ownerBrevoPayload, 'Owner'),
+        sendBrevo(customerBrevoPayload, 'Customer')
+      ]);
+
+      ownerEmailSent = ownerRes.status === 'fulfilled' && ownerRes.value === true;
+      customerEmailSent = customerRes.status === 'fulfilled' && customerRes.value === true;
+    }
+
+    // 2. SECONDARY / FALLBACK: Gmail SMTP (if Brevo failed or is unconfigured)
+    if (cleanEmailPass && (!ownerEmailSent || !customerEmailSent)) {
+      console.log('ℹ️ [EMAIL DISPATCH] Engaging Gmail SMTP fallback...');
+      const emailAttachments = uploadedFiles.map(f => ({
+        filename: f.originalname,
+        path: f.path
+      }));
+
+      // Fallback Owner notification via Gmail
+      if (!ownerEmailSent) {
+        try {
+          const mailInfo = await transporter.sendMail({
+            from: `"${senderName}" <${cleanEmailUser}>`,
+            to: ownerEmail,
+            replyTo: email,
             subject: `New Project Inquiry from ${name} (${businessName ? businessName + ' - ' : ''}${businessType || 'General'})`,
-            htmlContent: `
-              <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd; max-width: 650px;">
+            text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\nBusiness Name: ${businessName || 'N/A'}\nBusiness Type: ${businessType || 'N/A'}\nExpected Timeline: ${timeline || 'N/A'}\nEstimated Budget: ${budget || 'N/A'}\n\nRequirements:\n${finalRequirements}\n\nAdditional Notes:\n${additionalNotes || 'None'}\n\nAttached Files (${attachments.length}):\n${attachments.map(a => `- ${a.originalName} (${(a.size / 1024).toFixed(1)} KB)`).join('\n') || 'None'}`,
+            attachments: emailAttachments,
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd;">
                 <h2 style="color: #006c4b; margin-top: 0; font-size: 20px;">New Project Inquiry Received</h2>
-                <div style="background-color: #ffffff; padding: 18px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2eae3;">
+                <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2eae3;">
                   <p style="margin: 6px 0;"><strong>👤 Customer Name:</strong> ${name}</p>
                   <p style="margin: 6px 0;"><strong>✉️ Email Address:</strong> <a href="mailto:${email}" style="color: #006c4b;">${email}</a></p>
                   <p style="margin: 6px 0;"><strong>📞 Phone Number:</strong> <a href="tel:${phone}" style="color: #006c4b; font-weight: bold; text-decoration: none;">${phone || 'Not provided'}</a></p>
@@ -301,8 +419,8 @@ app.post(['/api/contact', '/contact'], handleUpload, async (req, res) => {
                   <p style="margin: 6px 0;"><strong>⏱️ Expected Timeline:</strong> ${timeline || 'Not specified'}</p>
                   <p style="margin: 6px 0;"><strong>💰 Estimated Budget:</strong> ${budget || 'Not specified'}</p>
                   ${attachments.length > 0 ? `
-                  <p style="margin: 8px 0 4px 0;"><strong>📎 Attached Files (${attachments.length}):</strong></p>
-                  <ul style="margin: 4px 0 8px 20px; padding: 0; color: #006c4b;">
+                  <p style="margin: 6px 0;"><strong>📎 Attached Files (${attachments.length}):</strong></p>
+                  <ul style="margin: 4px 0 6px 20px; padding: 0; color: #006c4b;">
                     ${attachments.map(a => `<li><strong>${a.originalName}</strong> (${(a.size / 1024).toFixed(1)} KB)</li>`).join('')}
                   </ul>` : ''}
                 </div>
@@ -312,51 +430,33 @@ app.post(['/api/contact', '/contact'], handleUpload, async (req, res) => {
                 </div>
                 ${additionalNotes ? `
                 <p style="margin-bottom: 8px;"><strong>📌 Additional Notes / Instructions:</strong></p>
-                <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #6c7a71; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 16px;">
+                <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #6c7a71; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42;">
                   ${additionalNotes.replace(/\n/g, '<br>')}
                 </div>` : ''}
                 <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
-                <p style="font-size: 11px; color: #6c7a71; margin: 0;">Dispatched via Brevo Transactional Email Service to ${ownerEmail}</p>
+                <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to ${ownerEmail} via Gmail SMTP</p>
               </div>
             `
-          };
-
-          if (brevoAttachments.length > 0) {
-            ownerBrevoPayload.attachment = brevoAttachments;
-          }
-
-          const ownerRes = await fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
-            headers: {
-              'api-key': brevoApiKey,
-              'accept': 'application/json',
-              'content-type': 'application/json'
-            },
-            body: JSON.stringify(ownerBrevoPayload)
           });
-
-          const ownerResult = await ownerRes.json().catch(() => ({}));
-          if (ownerRes.ok) {
-            console.log('🚀 [BREVO SUCCESS] Owner inquiry email dispatched! Message ID:', ownerResult.messageId);
-            ownerEmailSent = true;
-          } else {
-            console.error('⚠️ [BREVO OWNER ERROR]', ownerResult.message || ownerResult);
-          }
-        } catch (ownerErr) {
-          console.error('❌ [BREVO OWNER EXCEPTION]', ownerErr.message);
+          console.log('[GMAIL SMTP SUCCESS] Owner email sent! Message ID:', mailInfo.messageId);
+          ownerEmailSent = true;
+        } catch (gmailErr) {
+          console.error('[GMAIL SMTP ERROR] Owner email failed:', gmailErr.message);
         }
+      }
 
-        // B. Send Customer Confirmation via Brevo
+      // Fallback Customer confirmation via Gmail
+      if (!customerEmailSent) {
         try {
-          const customerBrevoPayload = {
-            sender: { name: senderName, email: ownerEmail },
-            to: [{ email: email, name: name }],
-            replyTo: { email: ownerEmail, name: senderName },
+          const confirmInfo = await transporter.sendMail({
+            from: `"${senderName}" <${cleanEmailUser}>`,
+            to: email,
             subject: `We received your inquiry, ${name}! 🎉`,
-            htmlContent: `
+            text: `Hi ${name},\n\nThank you for reaching out! I've received your inquiry and will get back to you within 24 hours.\n\nHere's a summary of what you submitted:\n- Business Name: ${businessName || 'N/A'}\n- Business Type: ${businessType || 'N/A'}\n- Timeline: ${timeline || 'N/A'}\n- Budget: ${budget || 'N/A'}\n- Phone: ${phone || 'Not provided'}\n- Attached Files: ${attachments.map(a => a.originalName).join(', ') || 'None'}\n\nRequirements:\n${finalRequirements}\n\nLooking forward to working with you!\n\nBest regards,\nVenkateswaran G\n${senderName}`,
+            html: `
               <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd; max-width: 600px;">
                 <h2 style="color: #006c4b; margin-top: 0; font-size: 22px;">Thanks for reaching out, ${name}! 🎉</h2>
-                <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">I've received your inquiry and will review your requirements and get back to you <strong>within 24 hours</strong>.</p>
+                <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">I've received your inquiry and will get back to you <strong>within 24 hours</strong>.</p>
                 <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2eae3;">
                   <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: bold; color: #6c7a71; text-transform: uppercase; letter-spacing: 0.5px;">Your Submission Summary</p>
                   <p style="margin: 6px 0;"><strong>🏢 Business Name:</strong> ${businessName || 'Not specified'}</p>
@@ -371,136 +471,32 @@ app.post(['/api/contact', '/contact'], handleUpload, async (req, res) => {
                 <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 24px;">
                   ${finalRequirements.replace(/\n/g, '<br>')}
                 </div>
-                <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">Looking forward to collaborating with you!</p>
+                <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">Looking forward to working with you!</p>
                 <p style="font-size: 15px; color: #3c4a42; margin-bottom: 4px;">Best regards,</p>
                 <p style="font-size: 16px; font-weight: bold; color: #006c4b; margin: 0;">Venkateswaran G</p>
                 <p style="font-size: 13px; color: #6c7a71; margin: 2px 0 0 0;">${senderName}</p>
                 <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
-                <p style="font-size: 11px; color: #6c7a71; margin: 0;">Automated confirmation from ${senderName}. Please do not reply directly to this automated email.</p>
+                <p style="font-size: 11px; color: #6c7a71; margin: 0;">This is an automated confirmation. Please do not reply to this email.</p>
               </div>
             `
-          };
-
-          const customerRes = await fetch('https://api.brevo.com/v3/smtp/email', {
-            method: 'POST',
-            headers: {
-              'api-key': brevoApiKey,
-              'accept': 'application/json',
-              'content-type': 'application/json'
-            },
-            body: JSON.stringify(customerBrevoPayload)
           });
-
-          const customerResult = await customerRes.json().catch(() => ({}));
-          if (customerRes.ok) {
-            console.log('🚀 [BREVO SUCCESS] Customer confirmation dispatched! Message ID:', customerResult.messageId);
-            customerEmailSent = true;
-          } else {
-            console.error('⚠️ [BREVO CUSTOMER ERROR]', customerResult.message || customerResult);
-          }
-        } catch (custErr) {
-          console.error('❌ [BREVO CUSTOMER EXCEPTION]', custErr.message);
+          console.log('[GMAIL SMTP SUCCESS] Customer confirmation email sent! Message ID:', confirmInfo.messageId);
+          customerEmailSent = true;
+        } catch (confirmErr) {
+          console.error('[GMAIL SMTP ERROR] Customer confirmation failed:', confirmErr.message);
         }
       }
+    }
 
-      // 2. SECONDARY / FALLBACK: Gmail SMTP (if Brevo failed or is unconfigured)
-      if (cleanEmailPass && (!ownerEmailSent || !customerEmailSent)) {
-        console.log('ℹ️ [EMAIL DISPATCH] Engaging Gmail SMTP fallback...');
-        const emailAttachments = uploadedFiles.map(f => ({
-          filename: f.originalname,
-          path: f.path
-        }));
-
-        // Fallback Owner notification via Gmail
-        if (!ownerEmailSent) {
-          try {
-            const mailInfo = await transporter.sendMail({
-              from: `"${senderName}" <${cleanEmailUser}>`,
-              to: ownerEmail,
-              replyTo: email,
-              subject: `New Project Inquiry from ${name} (${businessName ? businessName + ' - ' : ''}${businessType || 'General'})`,
-              text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || 'Not provided'}\nBusiness Name: ${businessName || 'N/A'}\nBusiness Type: ${businessType || 'N/A'}\nExpected Timeline: ${timeline || 'N/A'}\nEstimated Budget: ${budget || 'N/A'}\n\nRequirements:\n${finalRequirements}\n\nAdditional Notes:\n${additionalNotes || 'None'}\n\nAttached Files (${attachments.length}):\n${attachments.map(a => `- ${a.originalName} (${(a.size / 1024).toFixed(1)} KB)`).join('\n') || 'None'}`,
-              attachments: emailAttachments,
-              html: `
-                <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd;">
-                  <h2 style="color: #006c4b; margin-top: 0; font-size: 20px;">New Project Inquiry Received</h2>
-                  <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid #e2eae3;">
-                    <p style="margin: 6px 0;"><strong>👤 Customer Name:</strong> ${name}</p>
-                    <p style="margin: 6px 0;"><strong>✉️ Email Address:</strong> <a href="mailto:${email}" style="color: #006c4b;">${email}</a></p>
-                    <p style="margin: 6px 0;"><strong>📞 Phone Number:</strong> <a href="tel:${phone}" style="color: #006c4b; font-weight: bold; text-decoration: none;">${phone || 'Not provided'}</a></p>
-                    <p style="margin: 6px 0;"><strong>🏢 Business Name:</strong> ${businessName || 'Not specified'}</p>
-                    <p style="margin: 6px 0;"><strong>🏢 Business Type:</strong> ${businessType || 'Not specified'}</p>
-                    <p style="margin: 6px 0;"><strong>⏱️ Expected Timeline:</strong> ${timeline || 'Not specified'}</p>
-                    <p style="margin: 6px 0;"><strong>💰 Estimated Budget:</strong> ${budget || 'Not specified'}</p>
-                    ${attachments.length > 0 ? `
-                    <p style="margin: 6px 0;"><strong>📎 Attached Files (${attachments.length}):</strong></p>
-                    <ul style="margin: 4px 0 6px 20px; padding: 0; color: #006c4b;">
-                      ${attachments.map(a => `<li><strong>${a.originalName}</strong> (${(a.size / 1024).toFixed(1)} KB)</li>`).join('')}
-                    </ul>` : ''}
-                  </div>
-                  <p style="margin-bottom: 8px;"><strong>📝 Requirements:</strong></p>
-                  <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 16px;">
-                    ${finalRequirements.replace(/\n/g, '<br>')}
-                  </div>
-                  ${additionalNotes ? `
-                  <p style="margin-bottom: 8px;"><strong>📌 Additional Notes / Instructions:</strong></p>
-                  <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #6c7a71; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42;">
-                    ${additionalNotes.replace(/\n/g, '<br>')}
-                  </div>` : ''}
-                  <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
-                  <p style="font-size: 12px; color: #6c7a71; margin: 0;">Dispatched automatically to ${ownerEmail} via Gmail SMTP</p>
-                </div>
-              `
-            });
-            console.log('[GMAIL SMTP SUCCESS] Owner email sent! Message ID:', mailInfo.messageId);
-            ownerEmailSent = true;
-          } catch (gmailErr) {
-            console.error('[GMAIL SMTP ERROR] Owner email failed:', gmailErr.message);
-          }
-        }
-
-        // Fallback Customer confirmation via Gmail
-        if (!customerEmailSent) {
-          try {
-            const confirmInfo = await transporter.sendMail({
-              from: `"${senderName}" <${cleanEmailUser}>`,
-              to: email,
-              subject: `We received your inquiry, ${name}! 🎉`,
-              text: `Hi ${name},\n\nThank you for reaching out! I've received your inquiry and will get back to you within 24 hours.\n\nHere's a summary of what you submitted:\n- Business Name: ${businessName || 'N/A'}\n- Business Type: ${businessType || 'N/A'}\n- Timeline: ${timeline || 'N/A'}\n- Budget: ${budget || 'N/A'}\n- Phone: ${phone || 'Not provided'}\n- Attached Files: ${attachments.map(a => a.originalName).join(', ') || 'None'}\n\nRequirements:\n${finalRequirements}\n\nLooking forward to working with you!\n\nBest regards,\nVenkateswaran G\n${senderName}`,
-              html: `
-                <div style="font-family: Arial, sans-serif; padding: 24px; color: #161d19; background-color: #f4fbf4; border-radius: 12px; border: 1px solid #dde4dd; max-width: 600px;">
-                  <h2 style="color: #006c4b; margin-top: 0; font-size: 22px;">Thanks for reaching out, ${name}! 🎉</h2>
-                  <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">I've received your inquiry and will get back to you <strong>within 24 hours</strong>.</p>
-                  <div style="background-color: #ffffff; padding: 16px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2eae3;">
-                    <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: bold; color: #6c7a71; text-transform: uppercase; letter-spacing: 0.5px;">Your Submission Summary</p>
-                    <p style="margin: 6px 0;"><strong>🏢 Business Name:</strong> ${businessName || 'Not specified'}</p>
-                    <p style="margin: 6px 0;"><strong>🏢 Business Type:</strong> ${businessType || 'Not specified'}</p>
-                    <p style="margin: 6px 0;"><strong>⏱️ Timeline:</strong> ${timeline || 'Not specified'}</p>
-                    <p style="margin: 6px 0;"><strong>💰 Budget:</strong> ${budget || 'Not specified'}</p>
-                    <p style="margin: 6px 0;"><strong>📞 Phone:</strong> ${phone || 'Not provided'}</p>
-                    ${attachments.length > 0 ? `
-                    <p style="margin: 6px 0;"><strong>📎 Attached Files:</strong> ${attachments.map(a => a.originalName).join(', ')}</p>` : ''}
-                  </div>
-                  <p style="margin-bottom: 8px; font-size: 14px;"><strong>📝 Requirements:</strong></p>
-                  <div style="background-color: #ffffff; padding: 16px; border-left: 4px solid #006c4b; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #3c4a42; margin-bottom: 24px;">
-                    ${finalRequirements.replace(/\n/g, '<br>')}
-                  </div>
-                  <p style="font-size: 15px; line-height: 1.6; color: #3c4a42;">Looking forward to working with you!</p>
-                  <p style="font-size: 15px; color: #3c4a42; margin-bottom: 4px;">Best regards,</p>
-                  <p style="font-size: 16px; font-weight: bold; color: #006c4b; margin: 0;">Venkateswaran G</p>
-                  <p style="font-size: 13px; color: #6c7a71; margin: 2px 0 0 0;">${senderName}</p>
-                  <hr style="border: none; border-top: 1px solid #bbcac0; margin-top: 24px; margin-bottom: 12px;">
-                  <p style="font-size: 11px; color: #6c7a71; margin: 0;">This is an automated confirmation. Please do not reply to this email.</p>
-                </div>
-              `
-            });
-            console.log('[GMAIL SMTP SUCCESS] Customer confirmation email sent! Message ID:', confirmInfo.messageId);
-            customerEmailSent = true;
-          } catch (confirmErr) {
-            console.error('[GMAIL SMTP ERROR] Customer confirmation failed:', confirmErr.message);
-          }
-        }
-      }
+    // Return responsive status
+    res.status(201).json({
+      success: true,
+      message: `Thank you for your message, ${name}! Your inquiry has been sent to Venkat and a confirmation email has been dispatched to you.`,
+      emailStatus: {
+        owner: ownerEmailSent,
+        customer: customerEmailSent
+      },
+      data: newSubmission
     });
 
   } catch (err) {

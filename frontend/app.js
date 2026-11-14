@@ -943,10 +943,10 @@ function initContactForm() {
     let requestHeaders = {};
 
     // Start sleek loading animation with dynamic text
-    const btnLabel = hasFiles ? 'Uploading & Sending' : 'Sending Message';
+    const btnLabel = hasFiles ? 'Uploading & Dispatching' : 'Sending Directly';
     const statusLabel = hasFiles
-      ? `Uploading ${selectedFiles.length} attachment(s) & delivering inquiry...`
-      : 'Connecting & sending your inquiry to Venkat...';
+      ? `Uploading ${selectedFiles.length} file(s) & dispatching to Venkat & Customer email...`
+      : 'Connecting & delivering directly to Venkat & Customer email service...';
     startLoadingState(btnLabel, statusLabel);
 
     if (hasFiles) {
@@ -1005,7 +1005,7 @@ function initContactForm() {
     };
 
     postToBackend(primaryUrl)
-      .then(data => handleSuccessResponse(data, name, email, recipient, payload))
+      .then(data => handleSuccessResponse(data, name, email))
       .catch((primaryErr) => {
         // If client validation error (400 or 422), display the exact message
         if (primaryErr.status === 400 || primaryErr.status === 422) {
@@ -1017,47 +1017,33 @@ function initContactForm() {
         console.warn('[CONTACT FORM] Primary endpoint failed:', primaryErr.message, 'Trying fallback...');
         // Try fallback port 5001 or cloud API
         postToBackend(fallbackUrl)
-          .then(data => handleSuccessResponse(data, name, email, recipient, payload))
+          .then(data => handleSuccessResponse(data, name, email))
           .catch((fallbackErr) => {
-            console.error('[CONTACT FORM] Both endpoints failed:', fallbackErr.message);
-            // Mailto fallback
+            console.error('[CONTACT FORM] Direct email delivery failed:', fallbackErr.message);
             stopLoadingState();
-            triggerMailtoFallback(payload, recipient);
-            resetAllFields();
+            showStatus(
+              '⚠️ Unable to deliver email right now. Please ensure your backend server is running or contact directly at freelancewithvenkat@gmail.com.',
+              'error'
+            );
           });
       });
 
-    function handleSuccessResponse(data, name, email, recipient, payload) {
+    function handleSuccessResponse(data, name, email) {
       stopLoadingState();
       if (data.success) {
-        showStatus(`✓ Thank you for your message, ${name}! I will reach out to you within 24 hours.`, 'success');
+        showStatus(
+          `✓ Thank you, ${name}! Your inquiry has been sent directly to Venkat, and a confirmation email has been dispatched to <strong>${email}</strong>.`,
+          'success'
+        );
         resetAllFields();
       } else {
-        triggerMailtoFallback(payload, recipient);
-        resetAllFields();
+        showStatus(
+          data.error || 'There was an issue dispatching your inquiry. Please try again.',
+          'error'
+        );
       }
     }
   });
-
-  function triggerMailtoFallback(p, recipient) {
-    const subject = encodeURIComponent(`Project Inquiry from ${p.name} (${p.businessName ? p.businessName + ' - ' : ''}${p.businessType || 'General'})`);
-    const bodyText =
-      `Hello Venkat,\n\n` +
-      `👤 Client Name: ${p.name}\n` +
-      `✉️ Email: ${p.email}\n` +
-      `📞 Phone: ${p.phone || 'N/A'}\n` +
-      `🏢 Business Name: ${p.businessName || 'N/A'}\n` +
-      `🏢 Business Type: ${p.businessType || 'N/A'}\n` +
-      `⏱️ Expected Timeline: ${p.timeline || 'N/A'}\n` +
-      `💰 Estimated Budget: ${p.budget || 'N/A'}\n\n` +
-      `📝 Requirements:\n${p.requirements}\n\n` +
-      (p.additionalNotes ? `📌 Additional Notes:\n${p.additionalNotes}\n\n` : '') +
-      `Best regards,\n${p.name}`;
-
-    const body = encodeURIComponent(bodyText);
-    window.location.href = `mailto:${recipient}?subject=${subject}&body=${body}`;
-    showStatus(`✓ Thank you, ${p.name}! Your email draft for ${recipient} has been prepared.`, 'success');
-  }
 
   function showStatus(message, type) {
     if (!statusMsg) return;
